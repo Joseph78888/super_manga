@@ -15,9 +15,9 @@ class SuperMangaApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Super Manga',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      // theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       routerConfig: appRouter,
     );
   }
