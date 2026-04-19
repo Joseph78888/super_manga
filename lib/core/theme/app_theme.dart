@@ -53,6 +53,9 @@ class AppTheme {
           trendingBlue: [Color(0xFF7A6CF8), Color(0xFF5041DE)],
           trendingRed: [Color(0xFFEF5350), Color(0xFFC62828)],
           trendingGreen: [Color(0xFF42E0AE), Color(0xFF16A085)],
+          trendingOrange: [Color(0xFFFF9800), Color(0xFFE65100)],
+          trendingMagenta: [Color(0xFFE040FB), Color(0xFFAA00FF)],
+          trendingTeal: [Color(0xFF26C6DA), Color(0xFF006064)],
           cardSurface: Color(0xFF161423),
         ),
       ],
@@ -67,6 +70,9 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
   final List<Color> trendingBlue;
   final List<Color> trendingRed;
   final List<Color> trendingGreen;
+  final List<Color> trendingOrange;
+  final List<Color> trendingMagenta;
+  final List<Color> trendingTeal;
   final Color cardSurface;
 
   const MangaAppColors({
@@ -74,6 +80,9 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
     required this.trendingBlue,
     required this.trendingRed,
     required this.trendingGreen,
+    required this.trendingOrange,
+    required this.trendingMagenta,
+    required this.trendingTeal,
     required this.cardSurface,
   });
 
@@ -83,6 +92,9 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
     List<Color>? trendingBlue,
     List<Color>? trendingRed,
     List<Color>? trendingGreen,
+    List<Color>? trendingOrange,
+    List<Color>? trendingMagenta,
+    List<Color>? trendingTeal,
     Color? cardSurface,
   }) {
     return MangaAppColors(
@@ -90,6 +102,9 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
       trendingBlue: trendingBlue ?? this.trendingBlue,
       trendingRed: trendingRed ?? this.trendingRed,
       trendingGreen: trendingGreen ?? this.trendingGreen,
+      trendingOrange: trendingOrange ?? this.trendingOrange,
+      trendingMagenta: trendingMagenta ?? this.trendingMagenta,
+      trendingTeal: trendingTeal ?? this.trendingTeal,
       cardSurface: cardSurface ?? this.cardSurface,
     );
   }
@@ -102,6 +117,9 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
       trendingBlue: _lerpGradient(trendingBlue, other.trendingBlue, t),
       trendingRed: _lerpGradient(trendingRed, other.trendingRed, t),
       trendingGreen: _lerpGradient(trendingGreen, other.trendingGreen, t),
+      trendingOrange: _lerpGradient(trendingOrange, other.trendingOrange, t),
+      trendingMagenta: _lerpGradient(trendingMagenta, other.trendingMagenta, t),
+      trendingTeal: _lerpGradient(trendingTeal, other.trendingTeal, t),
       cardSurface: Color.lerp(cardSurface, other.cardSurface, t)!,
     );
   }

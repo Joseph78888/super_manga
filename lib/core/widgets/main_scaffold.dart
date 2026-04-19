@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 class MainScaffold extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainScaffold({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainScaffold({super.key, required this.navigationShell});
 
   void _onItemTapped(int index) {
     navigationShell.goBranch(
@@ -26,12 +23,12 @@ class MainScaffold extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home_filled),
+            activeIcon: Icon(Icons.home_rounded),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.explore_outlined),
-            activeIcon: Icon(Icons.explore),
+            activeIcon: Icon(Icons.explore_rounded),
             label: 'Browse',
           ),
           BottomNavigationBarItem(
@@ -41,7 +38,7 @@ class MainScaffold extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_library_outlined),
-            activeIcon: Icon(Icons.local_library),
+            activeIcon: Icon(Icons.local_library_rounded),
             label: 'Library',
           ),
         ],
