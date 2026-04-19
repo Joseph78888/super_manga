@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'gradient_card.dart';
 import 'pill_badge.dart';
 
@@ -26,8 +27,10 @@ class MangaPosterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GradientCard(
-      width: width,
+    return GestureDetector(
+      onTap: () => context.push('/detail'),
+      child: GradientCard(
+        width: width,
       height: height,
       padding: const EdgeInsets.all(16),
       gradientColors: gradientColors,
@@ -99,6 +102,7 @@ class MangaPosterCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

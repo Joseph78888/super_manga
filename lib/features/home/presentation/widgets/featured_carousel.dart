@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/gradient_card.dart';
 import '../../../../core/widgets/pill_badge.dart';
@@ -14,9 +15,11 @@ class FeaturedCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: GradientCard(
-            height: 220,
-            gradientColors: colors.featuredGradient,
+          child: GestureDetector(
+            onTap: () => context.push('/detail'),
+            child: GradientCard(
+              height: 220,
+              gradientColors: colors.featuredGradient,
             child: Stack(
               children: [
                 // Diagonal lines placeholder (optional effect overlay)
@@ -86,6 +89,7 @@ class FeaturedCarousel extends StatelessWidget {
               ],
             ),
           ),
+        ),
         ),
         
         // Page Indicator

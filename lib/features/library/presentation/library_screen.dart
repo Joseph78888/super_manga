@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import 'cubit/library_cubit.dart';
 import 'cubit/library_state.dart';
@@ -164,10 +165,7 @@ class LibraryView extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: Navigate to Browse tab natively
-                          // Example: context.go('/browse') depending on GoRouter shell configurations
-                        },
+                        onPressed: () => context.go('/browse'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.accentRed,
                           foregroundColor: Colors.white,
