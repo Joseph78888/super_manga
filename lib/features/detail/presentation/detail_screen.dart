@@ -49,7 +49,7 @@ class DetailView extends StatelessWidget {
           SliverToBoxAdapter(child: _buildStatsBox()),
 
           // Action Row (Start Reading, Bookmark)
-          SliverToBoxAdapter(child: _buildActionRow()),
+          SliverToBoxAdapter(child: _buildActionRow(context)),
 
           // Genres Section
           SliverToBoxAdapter(child: _buildGenresOptions()),
@@ -345,7 +345,7 @@ class DetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildActionRow() {
+  Widget _buildActionRow(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Row(
@@ -354,7 +354,7 @@ class DetailView extends StatelessWidget {
             child: SizedBox(
               height: 56,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => context.push('/reader'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.accentRed,
                   shape: RoundedRectangleBorder(

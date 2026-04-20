@@ -6,6 +6,7 @@ import '../../features/browse/presentation/browse_screen.dart';
 import '../../features/library/presentation/library_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/detail/presentation/detail_screen.dart';
+import '../../features/reader/presentation/reader_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -62,6 +63,11 @@ final GoRouter appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/detail',
       builder: (context, state) => const DetailScreen(),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/reader',
+      builder: (context, state) => const ReaderScreen(),
     ),
   ],
 );
