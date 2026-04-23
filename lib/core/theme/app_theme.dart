@@ -56,7 +56,11 @@ class AppTheme {
           trendingOrange: [Color(0xFFFF9800), Color(0xFFE65100)],
           trendingMagenta: [Color(0xFFE040FB), Color(0xFFAA00FF)],
           trendingTeal: [Color(0xFF26C6DA), Color(0xFF006064)],
-          cardSurface: Color(0xFF161423),
+          surfaceCard: Color(0xFF161423),
+          surfaceElevated: Color(0xFF1E1A33),
+          surfaceInput: Color(0xFF1A1A2E),
+          headerGradientStart: Color(0xFF2E1C4B),
+          headerGradientEnd: Color(0xFF0F0B1A),
         ),
       ],
     );
@@ -73,7 +77,11 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
   final List<Color> trendingOrange;
   final List<Color> trendingMagenta;
   final List<Color> trendingTeal;
-  final Color cardSurface;
+  final Color surfaceCard;
+  final Color surfaceElevated;
+  final Color surfaceInput;
+  final Color headerGradientStart;
+  final Color headerGradientEnd;
 
   const MangaAppColors({
     required this.featuredGradient,
@@ -83,7 +91,11 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
     required this.trendingOrange,
     required this.trendingMagenta,
     required this.trendingTeal,
-    required this.cardSurface,
+    required this.surfaceCard,
+    required this.surfaceElevated,
+    required this.surfaceInput,
+    required this.headerGradientStart,
+    required this.headerGradientEnd,
   });
 
   @override
@@ -95,7 +107,11 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
     List<Color>? trendingOrange,
     List<Color>? trendingMagenta,
     List<Color>? trendingTeal,
-    Color? cardSurface,
+    Color? surfaceCard,
+    Color? surfaceElevated,
+    Color? surfaceInput,
+    Color? headerGradientStart,
+    Color? headerGradientEnd,
   }) {
     return MangaAppColors(
       featuredGradient: featuredGradient ?? this.featuredGradient,
@@ -105,7 +121,11 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
       trendingOrange: trendingOrange ?? this.trendingOrange,
       trendingMagenta: trendingMagenta ?? this.trendingMagenta,
       trendingTeal: trendingTeal ?? this.trendingTeal,
-      cardSurface: cardSurface ?? this.cardSurface,
+      surfaceCard: surfaceCard ?? this.surfaceCard,
+      surfaceElevated: surfaceElevated ?? this.surfaceElevated,
+      surfaceInput: surfaceInput ?? this.surfaceInput,
+      headerGradientStart: headerGradientStart ?? this.headerGradientStart,
+      headerGradientEnd: headerGradientEnd ?? this.headerGradientEnd,
     );
   }
 
@@ -120,7 +140,11 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
       trendingOrange: _lerpGradient(trendingOrange, other.trendingOrange, t),
       trendingMagenta: _lerpGradient(trendingMagenta, other.trendingMagenta, t),
       trendingTeal: _lerpGradient(trendingTeal, other.trendingTeal, t),
-      cardSurface: Color.lerp(cardSurface, other.cardSurface, t)!,
+      surfaceCard: Color.lerp(surfaceCard, other.surfaceCard, t)!,
+      surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t)!,
+      surfaceInput: Color.lerp(surfaceInput, other.surfaceInput, t)!,
+      headerGradientStart: Color.lerp(headerGradientStart, other.headerGradientStart, t)!,
+      headerGradientEnd: Color.lerp(headerGradientEnd, other.headerGradientEnd, t)!,
     );
   }
   

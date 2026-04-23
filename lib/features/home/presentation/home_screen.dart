@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import 'widgets/featured_carousel.dart';
 import 'widgets/trending_list.dart';
@@ -43,10 +44,13 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const CircleAvatar(
-                      radius: 22,
-                      backgroundColor: Color(0xFF1E1A33),
-                      // Placeholder for user profile
+                    GestureDetector(
+                      onTap: () => context.push('/profile'),
+                      child: const CircleAvatar(
+                        radius: 22,
+                        backgroundColor: Color(0xFF1E1A33),
+                        child: Icon(Icons.person, color: Colors.white54),
+                      ),
                     ),
                   ],
                 ),

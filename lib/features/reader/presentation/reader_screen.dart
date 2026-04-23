@@ -28,7 +28,7 @@ class ReaderView extends StatefulWidget {
 class _ReaderViewState extends State<ReaderView> {
   late ScrollController _scrollController;
   // Estimated height for a single dummy manga page to calculate scroll position
-  final double _dummyPageHeight = 600.0; 
+  final double _dummyPageHeight = 600.0;
 
   @override
   void initState() {
@@ -43,9 +43,11 @@ class _ReaderViewState extends State<ReaderView> {
     // might use visibility detectors. For dummy scrolling, we use division.
     final offset = _scrollController.offset;
     final int calculatedPage = (offset / _dummyPageHeight).floor() + 1;
-    
+
     final cubit = context.read<ReaderCubit>();
-    if (calculatedPage != cubit.state.currentPage && calculatedPage > 0 && calculatedPage <= cubit.state.totalPages) {
+    if (calculatedPage != cubit.state.currentPage &&
+        calculatedPage > 0 &&
+        calculatedPage <= cubit.state.totalPages) {
       cubit.updatePage(calculatedPage);
     }
   }
@@ -78,16 +80,27 @@ class _ReaderViewState extends State<ReaderView> {
                       height: _dummyPageHeight,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: index % 2 == 0 ? const Color(0xFF1E1A33) : const Color(0xFF161423), // Alternating blocks mimicking pages
+                        color: index % 2 == 0
+                            ? const Color(0xFF1E1A33)
+                            : const Color(
+                                0xFF161423,
+                              ), // Alternating blocks mimicking pages
                         border: Border(
-                          bottom: BorderSide(color: Colors.white.withOpacity(0.02), width: 1),
+                          bottom: BorderSide(
+                            color: Colors.white.withOpacity(0.02),
+                            width: 1,
+                          ),
                         ),
                       ),
                       alignment: Alignment.center,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.image_outlined, size: 48, color: Colors.white.withOpacity(0.1)),
+                          Icon(
+                            Icons.image_outlined,
+                            size: 48,
+                            color: Colors.white.withOpacity(0.1),
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'Page ${index + 1}',
@@ -104,136 +117,206 @@ class _ReaderViewState extends State<ReaderView> {
                 ),
               ),
 
-              // Top Glassmorphic Header (Telegram style)
+              // Top Dynamic Islands
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
-                top: state.isMenuVisible ? 0 : -100, // Slide out of view upwards
-                left: 0,
-                right: 0,
-                child: ClipRRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top + 8,
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F0B1A).withOpacity(0.65), // Semi-transparent dark background
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.white.withOpacity(0.05),
-                          ),
+                top: state.isMenuVisible
+                    ? MediaQuery.of(context).padding.top + 16
+                    : -100, // Slide out of view
+                left: 16,
+                right: 16,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Close Button
+                    _buildGlassContainer(
+                      shape: BoxShape.circle,
+                      width: 48,
+                      height: 48,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 24,
                         ),
-                      ),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                            onPressed: () => context.pop(),
-                          ),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Shadow Monarch',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  'Chapter 179',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.settings_outlined, color: Colors.white),
-                            onPressed: () {},
-                          ),
-                        ],
+                        onPressed: () => context.pop(),
                       ),
                     ),
-                  ),
+                    // Title Pill
+                    _buildGlassContainer(
+                      borderRadius: BorderRadius.circular(24),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      child: Text(
+                        'Ch. 179 • ${state.currentPage}/${state.totalPages}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    // More Button
+                    _buildGlassContainer(
+                      shape: BoxShape.circle,
+                      width: 48,
+                      height: 48,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.more_horiz,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              // Bottom Glassmorphic Scrubber
+              // Bottom Dynamic Islands
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
-                bottom: state.isMenuVisible ? 0 : -120, // Slide out of view downwards
-                left: 0,
-                right: 0,
-                child: ClipRRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: EdgeInsets.only(
-                        top: 24,
-                        bottom: MediaQuery.of(context).padding.bottom + 24,
-                        left: 24,
-                        right: 24,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F0B1A).withOpacity(0.65),
-                        border: Border(
-                          top: BorderSide(
-                            color: Colors.white.withOpacity(0.05),
-                          ),
+                bottom: state.isMenuVisible
+                    ? MediaQuery.of(context).padding.bottom + 20
+                    : -150, // Slide out of view
+                left: 16,
+                right: 16,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Chapters Button
+                    _buildGlassContainer(
+                      shape: BoxShape.circle,
+                      width: 56,
+                      height: 56,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.format_list_bulleted,
+                          color: Colors.white,
+                          size: 24,
                         ),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '${state.currentPage} / ${state.totalPages}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          SliderTheme(
-                            data: SliderTheme.of(context).copyWith(
-                              activeTrackColor: AppTheme.accentRed,
-                              inactiveTrackColor: Colors.white.withOpacity(0.1),
-                              thumbColor: AppTheme.accentRed,
-                              overlayColor: AppTheme.accentRed.withOpacity(0.2),
-                              trackHeight: 4,
-                            ),
-                            child: Slider(
-                              value: state.currentPage.toDouble(),
-                              min: 1,
-                              max: state.totalPages.toDouble(),
-                              onChanged: (value) {
-                                final targetPage = value.toInt();
-                                context.read<ReaderCubit>().updatePage(targetPage);
-                                // Quickly scroll to the target page via slider scrubbing
-                                _scrollController.jumpTo((targetPage - 1) * _dummyPageHeight);
-                              },
-                            ),
-                          ),
-                        ],
+                        onPressed: () {},
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    // Central Scrubber Pill
+                    Expanded(
+                      child: _buildGlassContainer(
+                        borderRadius: BorderRadius.circular(36),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Text(
+                            //   '${state.currentPage}/${state.totalPages}',
+                            //   style: const TextStyle(
+                            //     color: Colors.white,
+                            //     fontSize: 13,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                activeTrackColor: Colors.white,
+                                inactiveTrackColor: Colors.white.withOpacity(
+                                  0.2,
+                                ),
+                                thumbColor: Colors.white,
+                                overlayColor: Colors.white.withOpacity(0.2),
+                                trackHeight: 3,
+                                thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 8,
+                                ),
+                                overlayShape: const RoundSliderOverlayShape(
+                                  overlayRadius: 16,
+                                ),
+                              ),
+                              child: Slider(
+                                value: state.currentPage.toDouble(),
+                                min: 1,
+                                max: state.totalPages.toDouble(),
+                                onChanged: (value) {
+                                  final targetPage = value.toInt();
+                                  context.read<ReaderCubit>().updatePage(
+                                    targetPage,
+                                  );
+                                  _scrollController.jumpTo(
+                                    (targetPage - 1) * _dummyPageHeight,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // const SizedBox(width: 12),
+                    // // Settings/More Button
+                    // _buildGlassContainer(
+                    //   shape: BoxShape.circle,
+                    //   width: 56,
+                    //   height: 56,
+                    //   child: IconButton(
+                    //     icon: const Icon(Icons.more_horiz, color: Colors.white, size: 24),
+                    //     onPressed: () {},
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  // Builder method for reusable floating glassmorphic islands
+  Widget _buildGlassContainer({
+    required Widget child,
+    BoxShape shape = BoxShape.rectangle,
+    BorderRadius? borderRadius,
+    double? width,
+    double? height,
+    EdgeInsetsGeometry? padding,
+  }) {
+    return ClipRRect(
+      borderRadius:
+          borderRadius ??
+          (shape == BoxShape.circle
+              ? BorderRadius.circular(100)
+              : BorderRadius.zero),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          width: width,
+          height: height,
+          padding: padding,
+          decoration: BoxDecoration(
+            shape: shape,
+            borderRadius: shape == BoxShape.circle ? null : borderRadius,
+            color: const Color.fromARGB(
+              22,
+              206,
+              206,
+              206,
+            ), // Smooth stark dark overlay
+            border: Border.all(
+              color: Colors.white.withOpacity(0.08),
+              width: 1,
+            ), // Subtle glassy rim effect
+          ),
+          child: child,
+        ),
       ),
     );
   }
