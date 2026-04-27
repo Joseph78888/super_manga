@@ -26,6 +26,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> signInAnonymously() async {
+    await remoteDataSource.signInAnonymously();
+  }
+
+  @override
   Future<void> signOut() async {
     await remoteDataSource.signOut();
   }
@@ -44,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
       id: supabaseUser.id,
       email: supabaseUser.email ?? '',
       username: supabaseUser.userMetadata?['username'] as String?,
+      isAnonymous: supabaseUser.isAnonymous,
     );
   }
 }

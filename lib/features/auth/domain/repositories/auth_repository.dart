@@ -13,7 +13,7 @@ abstract class AuthRepository {
   });
 
   Future<void> signInWithGoogle();
-
+  Future<void> signInAnonymously();
   Future<void> signOut();
 
   UserEntity? getCurrentUser();

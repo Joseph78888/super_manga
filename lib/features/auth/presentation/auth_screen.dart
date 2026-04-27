@@ -64,6 +64,15 @@ class _AuthViewState extends State<AuthView> {
     }
   }
 
+  void _submitGuestAuth() async {
+    final cubit = context.read<AuthCubit>();
+    final success = await cubit.signInAsGuest();
+    
+    if (success && mounted) {
+      context.go('/'); // Navigate to home on success
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<MangaAppColors>()!;
@@ -339,7 +348,26 @@ class _AuthViewState extends State<AuthView> {
                           ),
                         ),
 
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 16),
+                        
+                        // Guest Mode Button
+                        TextButton(
+                          onPressed: state.isLoading ? null : _submitGuestAuth,
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white.withValues(alpha: 0.7),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: const Text(
+                            'Continue as Guest',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
 
                         // Toggle Login/Signup
                         Row(

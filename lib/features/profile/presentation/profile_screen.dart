@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../auth/data/datasources/auth_remote_data_source.dart';
+import '../../auth/data/repositories/auth_repository_impl.dart';
 import 'cubit/profile_cubit.dart';
 import 'cubit/profile_state.dart';
 
@@ -13,7 +15,13 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileCubit(),
+      create: (context) => ProfileCubit(
+        authRepository: AuthRepositoryImpl(
+          remoteDataSource: SupabaseAuthRemoteDataSource(
+            supabaseClient: Supabase.instance.client,
+          ),
+        ),
+      ),
       child: const ProfileView(),
     );
   }
@@ -49,7 +57,12 @@ class ProfileView extends StatelessWidget {
             slivers: [
               // Hero Profile Header
               SliverToBoxAdapter(
-                child: _buildHeroProfile(state, colors),
+                child: state.isLoading 
+                    ? const SizedBox(
+                        height: 260,
+                        child: Center(child: CircularProgressIndicator(color: AppTheme.accentRed)),
+                      )
+                    : _buildHeroProfile(state, colors),
               ),
 
               // Statistics Dashboard
@@ -92,7 +105,7 @@ class ProfileView extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () async {
                             developer.log('User signed out', name: 'auth');
-                            await Supabase.instance.client.auth.signOut();
+                            await context.read<ProfileCubit>().signOut();
                             if (context.mounted) {
                               context.go('/auth');
                             }
@@ -105,9 +118,9 @@ class ProfileView extends StatelessWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: const Text(
-                            'Sign Out',
-                            style: TextStyle(
+                          child: Text(
+                            state.isAnonymous ? 'Log In / Sign Up' : 'Sign Out',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
