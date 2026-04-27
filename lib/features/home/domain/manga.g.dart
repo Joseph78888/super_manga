@@ -8,22 +8,28 @@ part of 'manga.dart';
 
 Manga _$MangaFromJson(Map<String, dynamic> json) => Manga(
   id: json['id'] as String,
-  title: json['title'] as String,
-  thumbnailUrl: json['thumbnail_url'] as String,
+  titleAr: json['title_ar'] as String,
+  titleEn: json['title_en'] as String,
   description: json['description'] as String?,
-  genres:
-      (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
+  coverUrl: json['cover_url'] as String,
   status: json['status'] as String,
   rating: (json['rating'] as num?)?.toDouble(),
+  author: json['author'] as String?,
+  artist: json['artist'] as String?,
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
 );
 
 Map<String, dynamic> _$MangaToJson(Manga instance) => <String, dynamic>{
   'id': instance.id,
-  'title': instance.title,
-  'thumbnail_url': instance.thumbnailUrl,
+  'title_ar': instance.titleAr,
+  'title_en': instance.titleEn,
   'description': instance.description,
-  'genres': instance.genres,
+  'cover_url': instance.coverUrl,
   'status': instance.status,
   'rating': instance.rating,
+  'author': instance.author,
+  'artist': instance.artist,
+  'created_at': instance.createdAt?.toIso8601String(),
 };

@@ -1,116 +1,158 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/pill_badge.dart';
+import '../../home/data/datasources/manga_remote_data_source.dart';
+import '../../home/data/datasources/chapter_remote_data_source.dart';
+import '../../home/data/repositories/manga_repository.dart';
+import '../../home/data/repositories/chapter_repository.dart';
+import '../../home/domain/manga.dart';
+import '../../home/domain/chapter.dart';
 import 'cubit/detail_cubit.dart';
 import 'cubit/detail_state.dart';
 
 class DetailScreen extends StatelessWidget {
-  const DetailScreen({super.key});
+  final String mangaId;
+
+  const DetailScreen({super.key, required this.mangaId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailCubit(),
-      child: const DetailView(),
+      create: (_) => DetailCubit(
+        mangaRepository: MangaRepository(
+          dataSource: SupabaseMangaRemoteDataSource(
+            supabaseClient: Supabase.instance.client,
+          ),
+        ),
+        chapterRepository: ChapterRepository(
+          dataSource: SupabaseChapterRemoteDataSource(
+            supabaseClient: Supabase.instance.client,
+          ),
+        ),
+      )..loadDetail(mangaId),
+      child: const _DetailView(),
     );
   }
 }
 
-class DetailView extends StatelessWidget {
-  const DetailView({super.key});
+class _DetailView extends StatelessWidget {
+  const _DetailView();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // Hero Header with Gradient Background & Overlapping Content
-          SliverToBoxAdapter(child: _buildHeroHeader(context)),
+    return BlocBuilder<DetailCubit, DetailState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-          // Stats Box Section
-          SliverToBoxAdapter(child: _buildStatsBox()),
-
-          // Action Row (Start Reading, Bookmark)
-          SliverToBoxAdapter(child: _buildActionRow(context)),
-
-          // Genres Section
-          SliverToBoxAdapter(child: _buildGenresOptions()),
-
-          // Synopsis Section
-          SliverToBoxAdapter(child: _buildSynopsis()),
-
-          // Chapters Title
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(24, 32, 24, 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '5 Chapters',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    'Latest',
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
-                  ),
-                ],
+        if (state.error != null) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                onPressed: () => context.pop(),
               ),
             ),
-          ),
+            body: Center(
+              child: Text(
+                'Failed to load: ${state.error}',
+                style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
 
-          // Chapter List (Dummy Data)
-          SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              return _buildChapterItem(
-                chapterNum: 179 - index,
-                title: index == 0
-                    ? 'The Final Confrontation'
-                    : [
-                        'Shadow Army',
-                        'Rising Power',
-                        'The Hunt Begins',
-                        'Dark Secrets',
-                      ][index - 1],
-                time: index == 0 ? '2h ago' : '${index}w ago',
-                pages: 45 - index,
-                isNew: index == 0,
-              );
-            }, childCount: 5),
-          ),
+        final manga = state.manga;
+        if (manga == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-          const SliverToBoxAdapter(child: SizedBox(height: 40)),
-        ],
-      ),
+        return Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon:
+                  const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+              onPressed: () => context.pop(),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          body: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: _HeroHeader(manga: manga),
+              ),
+              SliverToBoxAdapter(
+                child: _StatsBox(
+                  chapterCount: state.chapters.length,
+                  status: manga.status,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _ActionRow(
+                  firstChapterId: state.chapters.isNotEmpty
+                      ? state.chapters.last.id
+                      : null,
+                  firstChapterNumber: state.chapters.isNotEmpty
+                      ? state.chapters.last.chapterNumber
+                      : null,
+                ),
+              ),
+              if (manga.description != null)
+                SliverToBoxAdapter(
+                  child: _Synopsis(manga: manga),
+                ),
+              SliverToBoxAdapter(
+                child: _ChaptersHeader(count: state.chapters.length),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _ChapterTile(
+                    chapter: state.chapters[index],
+                  ),
+                  childCount: state.chapters.length,
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 40)),
+            ],
+          ),
+        );
+      },
     );
   }
+}
 
-  Widget _buildHeroHeader(BuildContext context) {
+// ─── Sub-widgets ────────────────────────────────────────────────────────────
+
+class _HeroHeader extends StatelessWidget {
+  final Manga manga;
+
+  const _HeroHeader({required this.manga});
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Background Gradient & Watermark
+        // Gradient background
         Container(
           height: 320,
           width: double.infinity,
@@ -119,167 +161,118 @@ class DetailView extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFF6B52F6), // Vibrant purple
+                Color(0xFF6B52F6),
                 Color(0xFF33206E),
-                Color(0xFF0F0B1A), // Fade into dark scaffold bg
+                Color(0xFF0F0B1A),
               ],
             ),
           ),
-          child: Stack(
-            children: [
-              // Subtle slanted lines
-              Positioned.fill(
-                child: Opacity(
-                  opacity: 0.15,
-                  child: CustomPaint(painter: _HeaderLinesPainter()),
-                ),
-              ),
-              // Watermark text
-              const Positioned(
-                top: 100,
-                right: -20,
-                child: Opacity(
-                  opacity: 0.05,
-                  child: Text(
-                    'Shadow\nMonarch',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 80,
-                      fontWeight: FontWeight.w900,
-                      height: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          child: manga.coverUrl.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: manga.coverUrl,
+                  fit: BoxFit.cover,
+                  color: Colors.black.withOpacity(0.6),
+                  colorBlendMode: BlendMode.darken,
+                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                )
+              : const SizedBox.shrink(),
         ),
 
-        // Foreground Content
+        // Foreground content
         Padding(
           padding: const EdgeInsets.only(top: 240, left: 24, right: 24),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Poster Cover
-              Container(
-                width: 120,
-                height: 170,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: const Color(0xFF8B77F6),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'Shadow Monarch',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
+              // Poster thumbnail
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  imageUrl: manga.coverUrl,
+                  width: 120,
+                  height: 170,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    width: 120,
+                    height: 170,
+                    color: const Color(0xFF8B77F6),
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(),
                   ),
-                  textAlign: TextAlign.center,
+                  errorWidget: (_, __, ___) => Container(
+                    width: 120,
+                    height: 170,
+                    color: const Color(0xFF8B77F6),
+                    alignment: Alignment.center,
+                    child: Text(
+                      manga.titleEn,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
 
-              // Title, Author, Stats
+              // Title & metadata
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Shadow Monarch',
-                      style: TextStyle(
+                    Text(
+                      manga.titleEn,
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         height: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Chugong',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Row(
-                      children: [
-                        Text(
-                          '4.9',
-                          style: TextStyle(
-                            color: Colors.amber,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
+                    if (manga.titleAr.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        manga.titleAr,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF422E8A).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFF422E8A)),
-                          ),
-                          child: const Text(
-                            'MANHWA',
-                            style: TextStyle(
-                              color: Color(0xFF8B77F6),
-                              fontSize: 11,
+                      ),
+                    ],
+                    if (manga.author != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        manga.author!,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.6),
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                    if (manga.rating != null) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.star,
+                              color: Colors.amber, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            manga.rating!.toStringAsFixed(1),
+                            style: const TextStyle(
+                              color: Colors.amber,
                               fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF133E2B),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFF133E2B)),
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.circle,
-                                color: Color(0xFF32C68A),
-                                size: 6,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                'ongoing',
-                                style: TextStyle(
-                                  color: Color(0xFF32C68A),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    _StatusBadge(status: manga.status),
                   ],
                 ),
               ),
@@ -289,8 +282,65 @@ class DetailView extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildStatsBox() {
+class _StatusBadge extends StatelessWidget {
+  final String status;
+
+  const _StatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final isOngoing = status.toLowerCase().contains('ongoing') ||
+        status.toLowerCase() == 'ongoing';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: isOngoing
+            ? const Color(0xFF133E2B)
+            : const Color(0xFF2A1A1A),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isOngoing
+              ? const Color(0xFF133E2B)
+              : const Color(0xFF5A2020),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.circle,
+            color: isOngoing
+                ? const Color(0xFF32C68A)
+                : Colors.redAccent,
+            size: 6,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            status,
+            style: TextStyle(
+              color: isOngoing
+                  ? const Color(0xFF32C68A)
+                  : Colors.redAccent,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatsBox extends StatelessWidget {
+  final int chapterCount;
+  final String status;
+
+  const _StatsBox({required this.chapterCount, required this.status});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
       child: Container(
@@ -301,18 +351,24 @@ class DetailView extends StatelessWidget {
         ),
         child: Row(
           children: [
-            _buildStatItem('179', 'Chapters'),
-            _buildDivider(),
-            _buildStatItem('52.3M', 'Views'),
-            _buildDivider(),
-            _buildStatItem('2h ago', 'Updated'),
+            _StatItem(value: '$chapterCount', label: 'Chapters'),
+            _Divider(),
+            _StatItem(value: status, label: 'Status'),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildStatItem(String value, String label) {
+class _StatItem extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _StatItem({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
@@ -336,16 +392,27 @@ class DetailView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildDivider() {
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 1,
       height: 40,
       color: Colors.white.withOpacity(0.05),
     );
   }
+}
 
-  Widget _buildActionRow(BuildContext context) {
+class _ActionRow extends StatelessWidget {
+  final String? firstChapterId;
+  final int? firstChapterNumber;
+
+  const _ActionRow({this.firstChapterId, this.firstChapterNumber});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Row(
@@ -354,9 +421,15 @@ class DetailView extends StatelessWidget {
             child: SizedBox(
               height: 56,
               child: ElevatedButton(
-                onPressed: () => context.push('/reader'),
+                onPressed: firstChapterId == null
+                    ? null
+                    : () => context.push(
+                          '/reader/$firstChapterId'
+                          '?chapterNumber=$firstChapterNumber',
+                        ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.accentRed,
+                  disabledBackgroundColor: Colors.white10,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -390,52 +463,15 @@ class DetailView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildGenresOptions() {
-    final genres = ['Action', 'Fantasy', 'Isekai'];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Genres',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 12,
-            children: genres.map((genre) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF161423),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
-                child: Text(
-                  genre,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 13,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
+class _Synopsis extends StatelessWidget {
+  final Manga manga;
 
-  Widget _buildSynopsis() {
+  const _Synopsis({required this.manga});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
       child: Column(
@@ -452,14 +488,11 @@ class DetailView extends StatelessWidget {
           const SizedBox(height: 12),
           BlocBuilder<DetailCubit, DetailState>(
             builder: (context, state) {
-              final text =
-                  'The weakest hunter of all mankind. Sung Jin-Woo, a man who has had to battle constantly just to stay alive. One day, he receives a strange power to level up that only he can see. Will he become the Shadow Monarch? And what is the true origin of the gates?';
-
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    text,
+                    manga.description ?? '',
                     maxLines: state.isSynopsisExpanded ? null : 4,
                     overflow: state.isSynopsisExpanded
                         ? TextOverflow.visible
@@ -472,7 +505,8 @@ class DetailView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(
-                    onTap: () => context.read<DetailCubit>().toggleSynopsis(),
+                    onTap: () =>
+                        context.read<DetailCubit>().toggleSynopsis(),
                     child: Text(
                       state.isSynopsisExpanded ? 'Read less' : 'Read more',
                       style: const TextStyle(
@@ -490,16 +524,53 @@ class DetailView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildChapterItem({
-    required int chapterNum,
-    required String title,
-    required String time,
-    required int pages,
-    required bool isNew,
-  }) {
+class _ChaptersHeader extends StatelessWidget {
+  final int count;
+
+  const _ChaptersHeader({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '$count ${count == 1 ? 'Chapter' : 'Chapters'}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const Text(
+            'Latest first',
+            style: TextStyle(color: Colors.grey, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChapterTile extends StatelessWidget {
+  final Chapter chapter;
+
+  const _ChapterTile({required this.chapter});
+
+  @override
+  Widget build(BuildContext context) {
+    final isNew = chapter.createdAt != null &&
+        DateTime.now().difference(chapter.createdAt!).inDays < 7;
+
     return InkWell(
-      onTap: () {},
+      onTap: () => context.push(
+        '/reader/${chapter.id}'
+        '?chapterNumber=${chapter.chapterNumber}',
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         child: Column(
@@ -508,7 +579,7 @@ class DetailView extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Ch.$chapterNum',
+                  'Ch.${chapter.chapterNumber}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -524,48 +595,40 @@ class DetailView extends StatelessWidget {
                 ],
               ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 14,
+            if (chapter.chapterName != null &&
+                chapter.chapterName!.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                chapter.chapterName!,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '$pages pages • $time',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
-                fontSize: 12,
+            ],
+            if (chapter.createdAt != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                _formatDate(chapter.createdAt!),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 12,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
     );
   }
-}
 
-// Custom Painter for the slanted background lines
-class _HeaderLinesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
-
-    const spacing = 30.0;
-    for (double i = -size.height; i < size.width * 2; i += spacing) {
-      canvas.drawLine(
-        Offset(i, 0),
-        Offset(i - size.height, size.height), // slanted backwards slightly
-        paint,
-      );
-    }
+  String _formatDate(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) return 'Today';
+    if (diff.inDays == 1) return 'Yesterday';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
+    return '${(diff.inDays / 30).floor()}mo ago';
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

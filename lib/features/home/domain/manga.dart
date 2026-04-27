@@ -2,25 +2,31 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'manga.g.dart';
 
-/// Represents a Manga entity in the domain layer.
+/// Represents a Manga entity matching the `manga` Supabase table.
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Manga {
   final String id;
-  final String title;
-  final String thumbnailUrl;
+  final String titleAr;
+  final String titleEn;
   final String? description;
-  final List<String> genres;
+  final String coverUrl;
   final String status;
   final double? rating;
+  final String? author;
+  final String? artist;
+  final DateTime? createdAt;
 
   const Manga({
     required this.id,
-    required this.title,
-    required this.thumbnailUrl,
+    required this.titleAr,
+    required this.titleEn,
     this.description,
-    this.genres = const [],
+    required this.coverUrl,
     required this.status,
     this.rating,
+    this.author,
+    this.artist,
+    this.createdAt,
   });
 
   factory Manga.fromJson(Map<String, dynamic> json) => _$MangaFromJson(json);

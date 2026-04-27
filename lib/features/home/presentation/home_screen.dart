@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../data/datasources/manga_remote_data_source.dart';
+import '../data/repositories/manga_repository.dart';
+import 'cubit/home_cubit.dart';
+import 'cubit/home_state.dart';
 import 'widgets/featured_carousel.dart';
 import 'widgets/trending_list.dart';
 import 'widgets/recently_updated_list.dart';
@@ -10,12 +15,29 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => HomeCubit(
+        mangaRepository: MangaRepository(
+          dataSource: SupabaseMangaRemoteDataSource(
+            supabaseClient: Supabase.instance.client,
+          ),
+        ),
+      )..loadMangas(),
+      child: const _HomeView(),
+    );
+  }
+}
+
+class _HomeView extends StatelessWidget {
+  const _HomeView();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // Safe Area / App Bar simulation
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
@@ -56,21 +78,42 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
-            // Body Content
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 32),
-                child: Column(
-                  children: [
-                    FeaturedCarousel(),
-                    SizedBox(height: 24),
-                    TrendingList(),
-                    SizedBox(height: 24),
-                    RecentlyUpdatedList(),
-                    SizedBox(height: 32), // Bottum padding
-                  ],
-                ),
+            SliverToBoxAdapter(
+              child: BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return switch (state) {
+                    HomeInitial() || HomeLoading() => const SizedBox(
+                        height: 300,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    HomeError(:final message) => SizedBox(
+                        height: 300,
+                        child: Center(
+                          child: Text(
+                            'Failed to load: $message',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    HomeLoaded(:final mangas) => Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Column(
+                          children: [
+                            if (mangas.isNotEmpty)
+                              FeaturedCarousel(manga: mangas.first),
+                            const SizedBox(height: 24),
+                            TrendingList(mangas: mangas),
+                            const SizedBox(height: 24),
+                            RecentlyUpdatedList(mangas: mangas),
+                            const SizedBox(height: 32),
+                          ],
+                        ),
+                      ),
+                  };
+                },
               ),
             ),
           ],

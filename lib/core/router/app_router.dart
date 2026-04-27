@@ -10,7 +10,9 @@ import '../../features/detail/presentation/detail_screen.dart';
 import '../../features/reader/presentation/reader_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
-final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
+final GlobalKey<NavigatorState> _rootNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// Centralized router configuration using [GoRouter] and [StatefulShellRoute]
 /// for persistent bottom navigation.
@@ -22,14 +24,12 @@ final GoRouter appRouter = GoRouter(
     final isAuthRoute = state.matchedLocation == '/auth';
 
     if (session == null && !isAuthRoute) {
-      // User is not logged in, redirect to auth page
       return '/auth';
     } else if (session != null && isAuthRoute) {
-      // User is logged in but trying to access auth page, redirect to home
       return '/';
     }
 
-    return null; // No redirect needed
+    return null;
   },
   routes: [
     StatefulShellRoute.indexedStack(
@@ -77,13 +77,24 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
-      path: '/detail',
-      builder: (context, state) => const DetailScreen(),
+      path: '/detail/:mangaId',
+      builder: (context, state) {
+        final mangaId = state.pathParameters['mangaId']!;
+        return DetailScreen(mangaId: mangaId);
+      },
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
-      path: '/reader',
-      builder: (context, state) => const ReaderScreen(),
+      path: '/reader/:chapterId',
+      builder: (context, state) {
+        final chapterId = state.pathParameters['chapterId']!;
+        final chapterNumber =
+            state.uri.queryParameters['chapterNumber'] ?? '';
+        return ReaderScreen(
+          chapterId: chapterId,
+          chapterNumber: chapterNumber,
+        );
+      },
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
