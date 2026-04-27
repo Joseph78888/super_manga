@@ -1,10 +1,12 @@
 import 'dart:developer' as developer;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import '../../domain/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(const AuthState());
+  final AuthRepository authRepository;
+
+  AuthCubit({required this.authRepository}) : super(const AuthState());
 
   void toggleMode() {
     emit(state.copyWith(
@@ -37,16 +39,14 @@ class AuthCubit extends Cubit<AuthState> {
         return false;
       }
       
-      final supabase = Supabase.instance.client;
-
       if (state.isLoginMode) {
         // Sign In
         developer.log('Attempting sign in for user: $email', name: 'auth_cubit');
-        final response = await supabase.auth.signInWithPassword(
+        final user = await authRepository.signIn(
           email: email,
           password: password,
         );
-        developer.log('Sign in successful. User ID: ${response.user?.id}', name: 'auth_cubit');
+        developer.log('Sign in successful. User ID: ${user.id}', name: 'auth_cubit');
       } else {
         // Sign Up
         developer.log('Attempting sign up for user: $email', name: 'auth_cubit');
@@ -61,23 +61,27 @@ class AuthCubit extends Cubit<AuthState> {
           return false;
         }
         
-        final response = await supabase.auth.signUp(
+        final user = await authRepository.signUp(
           email: email,
           password: password,
-          data: {'username': username},
+          username: username,
         );
-        developer.log('Sign up successful. User ID: ${response.user?.id}', name: 'auth_cubit');
+        developer.log('Sign up successful. User ID: ${user.id}', name: 'auth_cubit');
       }
 
       emit(state.copyWith(isLoading: false));
       return true; // Success
-    } on AuthException catch (e, s) {
-      developer.log('Supabase Auth Exception', name: 'auth_cubit', level: 1000, error: e, stackTrace: s);
-      emit(state.copyWith(isLoading: false, errorMessage: e.message));
-      return false;
     } catch (e, s) {
-      developer.log('Unexpected Error during auth', name: 'auth_cubit', level: 1000, error: e, stackTrace: s);
-      emit(state.copyWith(isLoading: false, errorMessage: 'An unexpected error occurred.'));
+      // AuthRepositoryImpl could be throwing AuthException or other custom exceptions.
+      // We can check e.toString() or rely on the repository to throw specific Exception types if we strictly separated them.
+      developer.log('Error during auth', name: 'auth_cubit', level: 1000, error: e, stackTrace: s);
+      // Try to parse out the message if it's an AuthException
+      String errorMsg = e.toString();
+      if (errorMsg.contains('AuthApiException')) {
+         // rough parsing to get the message part
+         errorMsg = 'Authentication failed. Please check your credentials or rate limits.';
+      }
+      emit(state.copyWith(isLoading: false, errorMessage: errorMsg));
       return false;
     }
   }
@@ -86,15 +90,12 @@ class AuthCubit extends Cubit<AuthState> {
     developer.log('Attempting Google OAuth sign in', name: 'auth_cubit');
     emit(state.copyWith(isLoading: true, errorMessage: null));
     try {
-      await Supabase.instance.client.auth.signInWithOAuth(OAuthProvider.google);
+      await authRepository.signInWithGoogle();
       developer.log('Google OAuth flow started successfully', name: 'auth_cubit');
       emit(state.copyWith(isLoading: false));
-    } on AuthException catch (e, s) {
-      developer.log('Google OAuth Supabase Exception', name: 'auth_cubit', level: 1000, error: e, stackTrace: s);
-      emit(state.copyWith(isLoading: false, errorMessage: e.message));
     } catch (e, s) {
-      developer.log('Unexpected Error during Google OAuth', name: 'auth_cubit', level: 1000, error: e, stackTrace: s);
-      emit(state.copyWith(isLoading: false, errorMessage: 'An unexpected error occurred.'));
+      developer.log('Error during Google OAuth', name: 'auth_cubit', level: 1000, error: e, stackTrace: s);
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 }

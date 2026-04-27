@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/custom_text_field.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/custom_text_field.dart';
+import '../data/datasources/auth_remote_data_source.dart';
+import '../data/repositories/auth_repository_impl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'cubit/auth_cubit.dart';
 import 'cubit/auth_state.dart';
 
@@ -12,7 +15,13 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthCubit(),
+      create: (context) => AuthCubit(
+        authRepository: AuthRepositoryImpl(
+          remoteDataSource: SupabaseAuthRemoteDataSource(
+            supabaseClient: Supabase.instance.client,
+          ),
+        ),
+      ),
       child: const AuthView(),
     );
   }
@@ -29,7 +38,8 @@ class _AuthViewState extends State<AuthView> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -48,7 +58,7 @@ class _AuthViewState extends State<AuthView> {
       username: _usernameController.text,
       confirmPassword: _confirmPasswordController.text,
     );
-    
+
     if (success && mounted) {
       context.go('/'); // Navigate to home on success
     }
@@ -57,7 +67,7 @@ class _AuthViewState extends State<AuthView> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<MangaAppColors>()!;
-    
+
     return Scaffold(
       body: Stack(
         children: [
@@ -76,7 +86,7 @@ class _AuthViewState extends State<AuthView> {
               ),
             ),
           ),
-          
+
           SafeArea(
             child: BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
@@ -104,10 +114,12 @@ class _AuthViewState extends State<AuthView> {
                           color: AppTheme.accentRed,
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Title
                         Text(
-                          state.isLoginMode ? 'Welcome Back' : 'Join Super Manga',
+                          state.isLoginMode
+                              ? 'Welcome Back'
+                              : 'Join Super Manga',
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             color: Colors.white,
@@ -118,7 +130,7 @@ class _AuthViewState extends State<AuthView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          state.isLoginMode 
+                          state.isLoginMode
                               ? 'Sign in to continue reading'
                               : 'Create an account to track your progress',
                           textAlign: TextAlign.center,
@@ -133,7 +145,7 @@ class _AuthViewState extends State<AuthView> {
                         AnimatedSize(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
-                          child: state.isLoginMode 
+                          child: state.isLoginMode
                               ? const SizedBox.shrink()
                               : Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
@@ -144,7 +156,7 @@ class _AuthViewState extends State<AuthView> {
                                   ),
                                 ),
                         ),
-                        
+
                         CustomTextField(
                           controller: _emailController,
                           hintText: 'Email Address',
@@ -152,7 +164,7 @@ class _AuthViewState extends State<AuthView> {
                           keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 16),
-                        
+
                         CustomTextField(
                           controller: _passwordController,
                           hintText: 'Password',
@@ -160,13 +172,17 @@ class _AuthViewState extends State<AuthView> {
                           obscureText: state.isPasswordObscured,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              state.isPasswordObscured ? Icons.visibility_off : Icons.visibility,
+                              state.isPasswordObscured
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                               color: Colors.white.withValues(alpha: 0.5),
                             ),
-                            onPressed: () => context.read<AuthCubit>().togglePasswordVisibility(),
+                            onPressed: () => context
+                                .read<AuthCubit>()
+                                .togglePasswordVisibility(),
                           ),
                         ),
-                        
+
                         // Forgot Password and Confirm Password logic
                         AnimatedSize(
                           duration: const Duration(milliseconds: 300),
@@ -178,28 +194,42 @@ class _AuthViewState extends State<AuthView> {
                                     onPressed: () {},
                                     child: Text(
                                       'Forgot Password?',
-                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.6,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 )
                               : Padding(
-                                  padding: const EdgeInsets.only(top: 16, bottom: 8),
+                                  padding: const EdgeInsets.only(
+                                    top: 16,
+                                    bottom: 8,
+                                  ),
                                   child: CustomTextField(
                                     controller: _confirmPasswordController,
                                     hintText: 'Confirm Password',
                                     prefixIcon: Icons.lock_outline,
-                                    obscureText: state.isConfirmPasswordObscured,
+                                    obscureText:
+                                        state.isConfirmPasswordObscured,
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        state.isConfirmPasswordObscured ? Icons.visibility_off : Icons.visibility,
-                                        color: Colors.white.withValues(alpha: 0.5),
+                                        state.isConfirmPasswordObscured
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: Colors.white.withValues(
+                                          alpha: 0.5,
+                                        ),
                                       ),
-                                      onPressed: () => context.read<AuthCubit>().toggleConfirmPasswordVisibility(),
+                                      onPressed: () => context
+                                          .read<AuthCubit>()
+                                          .toggleConfirmPasswordVisibility(),
                                     ),
                                   ),
                                 ),
                         ),
-                        
+
                         const SizedBox(height: 16),
 
                         // Main Action Button
@@ -224,33 +254,51 @@ class _AuthViewState extends State<AuthView> {
                                   ),
                                 )
                               : Text(
-                                  state.isLoginMode ? 'Sign In' : 'Create Account',
+                                  state.isLoginMode
+                                      ? 'Sign In'
+                                      : 'Create Account',
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                         ),
-                        
+
                         const SizedBox(height: 24),
                         Row(
                           children: [
-                            Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                'OR',
-                                style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                            Expanded(
+                              child: Divider(
+                                color: Colors.white.withValues(alpha: 0.1),
                               ),
                             ),
-                            Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Text(
+                                'OR',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.4),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: Colors.white.withValues(alpha: 0.1),
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 24),
 
                         // Google OAuth Button
                         ElevatedButton(
-                          onPressed: state.isLoading ? null : () => context.read<AuthCubit>().signInWithGoogle(),
+                          onPressed: state.isLoading
+                              ? null
+                              : () => context
+                                    .read<AuthCubit>()
+                                    .signInWithGoogle(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black87,
@@ -292,19 +340,22 @@ class _AuthViewState extends State<AuthView> {
                         ),
 
                         const SizedBox(height: 32),
-                        
+
                         // Toggle Login/Signup
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              state.isLoginMode 
+                              state.isLoginMode
                                   ? 'Don\'t have an account? '
                                   : 'Already have an account? ',
-                              style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.6),
+                              ),
                             ),
                             GestureDetector(
-                              onTap: () => context.read<AuthCubit>().toggleMode(),
+                              onTap: () =>
+                                  context.read<AuthCubit>().toggleMode(),
                               child: Text(
                                 state.isLoginMode ? 'Sign Up' : 'Sign In',
                                 style: const TextStyle(
