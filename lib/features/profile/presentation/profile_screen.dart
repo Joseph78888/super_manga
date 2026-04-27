@@ -1,6 +1,8 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/theme/app_theme.dart';
 import 'cubit/profile_cubit.dart';
 import 'cubit/profile_state.dart';
@@ -88,7 +90,13 @@ class ProfileView extends StatelessWidget {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            developer.log('User signed out', name: 'auth');
+                            await Supabase.instance.client.auth.signOut();
+                            if (context.mounted) {
+                              context.go('/auth');
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E1A33),
                             foregroundColor: AppTheme.accentRed,

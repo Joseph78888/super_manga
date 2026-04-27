@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/main_scaffold.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/browse/presentation/browse_screen.dart';
@@ -8,7 +9,7 @@ import '../../features/search/presentation/search_screen.dart';
 import '../../features/detail/presentation/detail_screen.dart';
 import '../../features/reader/presentation/reader_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
-
+import '../../features/auth/presentation/auth_screen.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// Centralized router configuration using [GoRouter] and [StatefulShellRoute]
@@ -16,6 +17,20 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(de
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
+  redirect: (context, state) {
+    final session = Supabase.instance.client.auth.currentSession;
+    final isAuthRoute = state.matchedLocation == '/auth';
+
+    if (session == null && !isAuthRoute) {
+      // User is not logged in, redirect to auth page
+      return '/auth';
+    } else if (session != null && isAuthRoute) {
+      // User is logged in but trying to access auth page, redirect to home
+      return '/';
+    }
+
+    return null; // No redirect needed
+  },
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -74,6 +89,16 @@ final GoRouter appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/auth',
+      pageBuilder: (context, state) => CustomTransitionPage(
+        child: const AuthScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
     ),
   ],
 );
