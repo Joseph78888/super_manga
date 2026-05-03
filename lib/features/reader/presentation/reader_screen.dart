@@ -179,6 +179,10 @@ class _ReaderViewState extends State<_ReaderView> {
                 ),
               ),
 
+              // ── Edge Fades ──────────────────────────────────────────────
+              const _EdgeFadeOverlay(isTop: true),
+              const _EdgeFadeOverlay(isTop: false),
+
               // ── Top HUD ─────────────────────────────────────────────────
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 250),
@@ -344,6 +348,46 @@ class _GlassChip extends StatelessWidget {
             border: Border.all(color: Colors.white.withOpacity(0.08)),
           ),
           child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// Gradient overlay to fade edges and support UI elements.
+class _EdgeFadeOverlay extends StatelessWidget {
+  final bool isTop;
+
+  const _EdgeFadeOverlay({required this.isTop});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final double height = isTop ? 120 : 120;
+
+    final Color edgeColor;
+    if (isTop) {
+      edgeColor = isDark
+          ? Colors.black.withOpacity(0.4)
+          : Colors.black.withOpacity(0.08);
+    } else {
+      edgeColor = isDark
+          ? Colors.black.withOpacity(0.6)
+          : Colors.black.withOpacity(0.12);
+    }
+
+    return IgnorePointer(
+      child: Align(
+        alignment: isTop ? Alignment.topCenter : Alignment.bottomCenter,
+        child: Container(
+          height: height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: isTop ? Alignment.topCenter : Alignment.bottomCenter,
+              end: isTop ? Alignment.bottomCenter : Alignment.topCenter,
+              colors: [edgeColor, Colors.transparent],
+            ),
+          ),
         ),
       ),
     );
