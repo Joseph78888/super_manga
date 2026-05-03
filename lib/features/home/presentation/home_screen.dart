@@ -83,35 +83,35 @@ class _HomeView extends StatelessWidget {
                 builder: (context, state) {
                   return switch (state) {
                     HomeInitial() || HomeLoading() => const SizedBox(
-                        height: 300,
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
+                      height: 300,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
                     HomeError(:final message) => SizedBox(
-                        height: 300,
-                        child: Center(
-                          child: Text(
-                            'Failed to load: $message',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
-                            ),
-                            textAlign: TextAlign.center,
+                      height: 300,
+                      child: Center(
+                        child: Text(
+                          'Failed to load: $message',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
+                    ),
                     HomeLoaded(:final mangas) => Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: Column(
-                          children: [
-                            if (mangas.isNotEmpty)
-                              FeaturedCarousel(manga: mangas.first),
-                            const SizedBox(height: 24),
-                            TrendingList(mangas: mangas),
-                            const SizedBox(height: 24),
-                            RecentlyUpdatedList(mangas: mangas),
-                            const SizedBox(height: 32),
-                          ],
-                        ),
+                      padding: const EdgeInsets.only(bottom: 32),
+                      child: Column(
+                        children: [
+                          if (mangas.isNotEmpty)
+                            FeaturedCarousel(manga: mangas.first),
+                          const SizedBox(height: 24),
+                          TrendingList(mangas: mangas),
+                          const SizedBox(height: 24),
+                          RecentlyUpdatedList(mangas: mangas),
+                          const SizedBox(height: 32),
+                        ],
                       ),
+                    ),
                   };
                 },
               ),
