@@ -83,28 +83,51 @@ class _DetailView extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              icon:
-                  const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-              onPressed: () => context.pop(),
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  onPressed: () => context.pop(),
+                ),
+              ),
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onPressed: () {},
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.more_horiz,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    onPressed: () {},
+                  ),
+                ),
               ),
             ],
           ),
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
-                child: _HeroHeader(manga: manga),
-              ),
+              SliverToBoxAdapter(child: _HeroHeader(manga: manga)),
               SliverToBoxAdapter(
                 child: _StatsBox(
                   chapterCount: state.chapters.length,
-                  status: manga.status,
+                  updatedAt: manga.createdAt,
                 ),
               ),
               SliverToBoxAdapter(
@@ -117,18 +140,17 @@ class _DetailView extends StatelessWidget {
                       : null,
                 ),
               ),
+              if (manga.genres != null && manga.genres!.isNotEmpty)
+                SliverToBoxAdapter(child: _GenresSection(genres: manga.genres!)),
               if (manga.description != null)
-                SliverToBoxAdapter(
-                  child: _Synopsis(manga: manga),
-                ),
+                SliverToBoxAdapter(child: _Synopsis(manga: manga)),
               SliverToBoxAdapter(
                 child: _ChaptersHeader(count: state.chapters.length),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => _ChapterTile(
-                    chapter: state.chapters[index],
-                  ),
+                  (context, index) =>
+                      _ChapterTile(chapter: state.chapters[index]),
                   childCount: state.chapters.length,
                 ),
               ),
@@ -160,20 +182,26 @@ class _HeroHeader extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF6B52F6),
-                Color(0xFF33206E),
-                Color(0xFF0F0B1A),
-              ],
+              colors: [Color(0xFF6B52F6), Color(0xFF33206E), Color(0xFF0F0B1A)],
             ),
           ),
           child: manga.coverUrl.isNotEmpty
-              ? CachedNetworkImage(
-                  imageUrl: manga.coverUrl,
-                  fit: BoxFit.cover,
-                  color: Colors.black.withOpacity(0.6),
-                  colorBlendMode: BlendMode.darken,
-                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
+              ? ShaderMask(
+                  shaderCallback: (rect) {
+                    return const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.black, Colors.transparent],
+                    ).createShader(
+                      Rect.fromLTRB(0, 0, rect.width, rect.height),
+                    );
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: CachedNetworkImage(
+                    imageUrl: manga.coverUrl,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  ),
                 )
               : const SizedBox.shrink(),
         ),
@@ -184,34 +212,48 @@ class _HeroHeader extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Poster thumbnail
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: CachedNetworkImage(
-                  imageUrl: manga.coverUrl,
-                  width: 120,
-                  height: 170,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
-                    width: 120,
-                    height: 170,
-                    color: const Color(0xFF8B77F6),
-                    alignment: Alignment.center,
-                    child: const CircularProgressIndicator(),
-                  ),
-                  errorWidget: (_, __, ___) => Container(
-                    width: 120,
-                    height: 170,
-                    color: const Color(0xFF8B77F6),
-                    alignment: Alignment.center,
-                    child: Text(
-                      manga.titleEn,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
+              // Poster thumbnail with fade
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: ShaderMask(
+                    shaderCallback: (rect) {
+                      return LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.black, Colors.black.withOpacity(0.8)],
+                      ).createShader(
+                        Rect.fromLTRB(0, 0, rect.width, rect.height),
+                      );
+                    },
+                    blendMode: BlendMode.dstIn,
+                    child: CachedNetworkImage(
+                      imageUrl: manga.coverUrl,
+                      width: 120,
+                      height: 160,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(
+                        width: 120,
+                        height: 160,
+                        color: const Color(0xFF8B77F6),
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(),
                       ),
-                      textAlign: TextAlign.center,
+                      errorWidget: (_, __, ___) => Container(
+                        width: 120,
+                        height: 160,
+                        color: const Color(0xFF8B77F6),
+                      ),
                     ),
                   ),
                 ),
@@ -233,46 +275,54 @@ class _HeroHeader extends StatelessWidget {
                         height: 1.2,
                       ),
                     ),
-                    if (manga.titleAr.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        manga.titleAr,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
                     if (manga.author != null) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         manga.author!,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
-                          fontSize: 15,
+                          fontSize: 14,
                         ),
                       ),
                     ],
                     if (manga.rating != null) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.star,
-                              color: Colors.amber, size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            manga.rating!.toStringAsFixed(1),
-                            style: const TextStyle(
-                              color: Colors.amber,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 6),
+                      Text(
+                        manga.rating!.toStringAsFixed(1),
+                        style: const TextStyle(
+                          color: Colors.amber,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                     const SizedBox(height: 12),
-                    _StatusBadge(status: manga.status),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1E1A33),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFF4A3A73)),
+                          ),
+                          child: const Text(
+                            'MANHWA',
+                            style: TextStyle(
+                              color: Color(0xFF8B77F6),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _StatusBadge(status: manga.status),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                   ],
                 ),
               ),
@@ -291,19 +341,16 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOngoing = status.toLowerCase().contains('ongoing') ||
+    final isOngoing =
+        status.toLowerCase().contains('ongoing') ||
         status.toLowerCase() == 'ongoing';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isOngoing
-            ? const Color(0xFF133E2B)
-            : const Color(0xFF2A1A1A),
+        color: const Color(0xFF161423),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isOngoing
-              ? const Color(0xFF133E2B)
-              : const Color(0xFF5A2020),
+          color: isOngoing ? const Color(0xFF133E2B) : const Color(0xFF5A2020),
         ),
       ),
       child: Row(
@@ -311,19 +358,15 @@ class _StatusBadge extends StatelessWidget {
         children: [
           Icon(
             Icons.circle,
-            color: isOngoing
-                ? const Color(0xFF32C68A)
-                : Colors.redAccent,
+            color: isOngoing ? const Color(0xFF32C68A) : Colors.redAccent,
             size: 6,
           ),
           const SizedBox(width: 4),
           Text(
-            status,
+            status.toLowerCase(),
             style: TextStyle(
-              color: isOngoing
-                  ? const Color(0xFF32C68A)
-                  : Colors.redAccent,
-              fontSize: 11,
+              color: isOngoing ? const Color(0xFF32C68A) : Colors.redAccent,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -335,25 +378,37 @@ class _StatusBadge extends StatelessWidget {
 
 class _StatsBox extends StatelessWidget {
   final int chapterCount;
-  final String status;
+  final DateTime? updatedAt;
 
-  const _StatsBox({required this.chapterCount, required this.status});
+  const _StatsBox({required this.chapterCount, required this.updatedAt});
+
+  String _timeAgo(DateTime? date) {
+    if (date == null) return 'N/A';
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays > 365) return '${(diff.inDays / 365).floor()}y ago';
+    if (diff.inDays > 30) return '${(diff.inDays / 30).floor()}mo ago';
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'Just now';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
           color: const Color(0xFF161423),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: Row(
           children: [
             _StatItem(value: '$chapterCount', label: 'Chapters'),
             _Divider(),
-            _StatItem(value: status, label: 'Status'),
+            _StatItem(value: _timeAgo(updatedAt), label: 'Updated'),
           ],
         ),
       ),
@@ -376,11 +431,11 @@ class _StatItem extends StatelessWidget {
             value,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 17,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
             label,
             style: TextStyle(
@@ -399,7 +454,7 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 1,
-      height: 40,
+      height: 32,
       color: Colors.white.withOpacity(0.05),
     );
   }
@@ -424,9 +479,9 @@ class _ActionRow extends StatelessWidget {
                 onPressed: firstChapterId == null
                     ? null
                     : () => context.push(
-                          '/reader/$firstChapterId'
-                          '?chapterNumber=$firstChapterNumber',
-                        ),
+                        '/reader/$firstChapterId'
+                        '?chapterNumber=$firstChapterNumber',
+                      ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.accentRed,
                   disabledBackgroundColor: Colors.white10,
@@ -458,6 +513,55 @@ class _ActionRow extends StatelessWidget {
               onPressed: () {},
               icon: const Icon(Icons.bookmark_border, color: Colors.white),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GenresSection extends StatelessWidget {
+  final List<String> genres;
+
+  const _GenresSection({required this.genres});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Genres',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: genres.map((genre) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF161423),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                ),
+                child: Text(
+                  genre,
+                  style: const TextStyle(
+                    color: Color(0xFFB3A5FF), // Soft purple to match the design
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
@@ -505,8 +609,7 @@ class _Synopsis extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   GestureDetector(
-                    onTap: () =>
-                        context.read<DetailCubit>().toggleSynopsis(),
+                    onTap: () => context.read<DetailCubit>().toggleSynopsis(),
                     child: Text(
                       state.isSynopsisExpanded ? 'Read less' : 'Read more',
                       style: const TextStyle(
@@ -563,7 +666,8 @@ class _ChapterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNew = chapter.createdAt != null &&
+    final isNew =
+        chapter.createdAt != null &&
         DateTime.now().difference(chapter.createdAt!).inDays < 7;
 
     return InkWell(
@@ -631,4 +735,3 @@ class _ChapterTile extends StatelessWidget {
     return '${(diff.inDays / 30).floor()}mo ago';
   }
 }
-

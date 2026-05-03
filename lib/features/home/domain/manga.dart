@@ -15,6 +15,8 @@ class Manga {
   final String? author;
   final String? artist;
   final DateTime? createdAt;
+  @JsonKey(name: 'manga_genres', fromJson: _genresFromJson)
+  final List<String>? genres;
 
   const Manga({
     required this.id,
@@ -27,7 +29,38 @@ class Manga {
     this.author,
     this.artist,
     this.createdAt,
+    this.genres,
   });
+
+  static List<String>? _genresFromJson(dynamic json) {
+    if (json == null) return null;
+    if (json is List) {
+      final List<String> result = [];
+      for (var e in json) {
+        if (e is Map<String, dynamic>) {
+          if (e.containsKey('name') && e['name'] != null) {
+            result.add(e['name'].toString());
+          } else if (e.containsKey('title') && e['title'] != null) {
+            result.add(e['title'].toString());
+          } else if (e.containsKey('genres') && e['genres'] != null) {
+            final g = e['genres'];
+            if (g is Map) {
+              final name = g['name'] ?? g['title'];
+              if (name != null) result.add(name.toString());
+            }
+          } else if (e.containsKey('genre') && e['genre'] != null) {
+            final g = e['genre'];
+            if (g is Map) {
+              final name = g['name'] ?? g['title'];
+              if (name != null) result.add(name.toString());
+            }
+          }
+        }
+      }
+      return result.isEmpty ? null : result;
+    }
+    return null;
+  }
 
   factory Manga.fromJson(Map<String, dynamic> json) => _$MangaFromJson(json);
   Map<String, dynamic> toJson() => _$MangaToJson(this);

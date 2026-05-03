@@ -98,16 +98,17 @@ class _HomeView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    HomeLoaded(:final mangas) => Padding(
+                    HomeLoaded state => Padding(
                       padding: const EdgeInsets.only(bottom: 32),
                       child: Column(
                         children: [
-                          if (mangas.isNotEmpty)
-                            FeaturedCarousel(manga: mangas.first),
+                          FeaturedCarousel(manga: state.featuredManga),
                           const SizedBox(height: 24),
-                          TrendingList(mangas: mangas),
+                          if (state.trendingMangas.isNotEmpty)
+                            TrendingList(mangas: state.trendingMangas),
                           const SizedBox(height: 24),
-                          RecentlyUpdatedList(mangas: mangas),
+                          if (state.recentMangas.isNotEmpty)
+                            RecentlyUpdatedList(mangas: state.recentMangas),
                           const SizedBox(height: 32),
                         ],
                       ),
