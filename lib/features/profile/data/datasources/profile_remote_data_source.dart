@@ -18,11 +18,11 @@ class SupabaseProfileRemoteDataSource implements ProfileRemoteDataSource {
           .select()
           .eq('id', userId)
           .maybeSingle();
-      
+
       if (response == null) {
         return null;
       }
-      
+
       return ProfileEntity.fromJson(response);
     } catch (e) {
       rethrow;

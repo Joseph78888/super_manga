@@ -7,7 +7,7 @@ class ChapterRepository {
   final ChapterRemoteDataSource _dataSource;
 
   ChapterRepository({required ChapterRemoteDataSource dataSource})
-      : _dataSource = dataSource;
+    : _dataSource = dataSource;
 
   /// Fetches chapters for a given [mangaId].
   Future<List<Chapter>> getChaptersByMangaId(String mangaId) async {

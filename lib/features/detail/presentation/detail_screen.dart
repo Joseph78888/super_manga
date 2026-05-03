@@ -141,7 +141,9 @@ class _DetailView extends StatelessWidget {
                 ),
               ),
               if (manga.genres != null && manga.genres!.isNotEmpty)
-                SliverToBoxAdapter(child: _GenresSection(genres: manga.genres!)),
+                SliverToBoxAdapter(
+                  child: _GenresSection(genres: manga.genres!),
+                ),
               if (manga.description != null)
                 SliverToBoxAdapter(child: _Synopsis(manga: manga)),
               SliverToBoxAdapter(
@@ -546,7 +548,10 @@ class _GenresSection extends StatelessWidget {
             runSpacing: 8,
             children: genres.map((genre) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF161423),
                   borderRadius: BorderRadius.circular(20),

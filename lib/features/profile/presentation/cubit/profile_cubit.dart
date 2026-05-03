@@ -10,9 +10,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit({
     required AuthRepository authRepository,
     required ProfileRepository profileRepository,
-  })  : _authRepository = authRepository,
-        _profileRepository = profileRepository,
-        super(const ProfileState()) {
+  }) : _authRepository = authRepository,
+       _profileRepository = profileRepository,
+       super(const ProfileState()) {
     loadUserData();
   }
 
@@ -36,7 +36,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         );
       } else {
         final profile = await _profileRepository.getProfile(user.id);
-        
+
         emit(
           state.copyWith(
             isLoading: false,

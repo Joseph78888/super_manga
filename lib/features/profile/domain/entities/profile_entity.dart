@@ -45,12 +45,12 @@ class ProfileEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        username,
-        avatarUrl,
-        isPremium,
-        mangaRead,
-        chaptersRead,
-        streakDays,
-      ];
+    id,
+    username,
+    avatarUrl,
+    isPremium,
+    mangaRead,
+    chaptersRead,
+    streakDays,
+  ];
 }

@@ -21,10 +21,8 @@ class RecentlyUpdatedList extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           itemCount: mangas.length,
-          separatorBuilder: (_, __) => const Divider(
-            height: 32,
-            color: Colors.white10,
-          ),
+          separatorBuilder: (_, __) =>
+              const Divider(height: 32, color: Colors.white10),
           itemBuilder: (context, index) {
             return _MangaTile(manga: mangas[index]);
           },

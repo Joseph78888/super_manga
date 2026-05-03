@@ -67,7 +67,7 @@ class _AuthViewState extends State<AuthView> {
   void _submitGuestAuth() async {
     final cubit = context.read<AuthCubit>();
     final success = await cubit.signInAsGuest();
-    
+
     if (success && mounted) {
       context.go('/'); // Navigate to home on success
     }
@@ -349,12 +349,14 @@ class _AuthViewState extends State<AuthView> {
                         ),
 
                         const SizedBox(height: 16),
-                        
+
                         // Guest Mode Button
                         TextButton(
                           onPressed: state.isLoading ? null : _submitGuestAuth,
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.white.withValues(alpha: 0.7),
+                            foregroundColor: Colors.white.withValues(
+                              alpha: 0.7,
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
                           child: const Text(

@@ -7,7 +7,7 @@ class PageRepository {
   final PageRemoteDataSource _dataSource;
 
   PageRepository({required PageRemoteDataSource dataSource})
-      : _dataSource = dataSource;
+    : _dataSource = dataSource;
 
   /// Fetches pages for a given [chapterId].
   Future<List<MangaPage>> getPagesByChapterId(String chapterId) async {

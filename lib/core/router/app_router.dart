@@ -11,8 +11,9 @@ import '../../features/reader/presentation/reader_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/auth/presentation/auth_screen.dart';
 
-final GlobalKey<NavigatorState> _rootNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'root',
+);
 
 /// Centralized router configuration using [GoRouter] and [StatefulShellRoute]
 /// for persistent bottom navigation.
@@ -40,10 +41,7 @@ final GoRouter appRouter = GoRouter(
         // Tab 1: Home
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/',
-              builder: (context, state) => const HomeScreen(),
-            ),
+            GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
           ],
         ),
         // Tab 2: Browse
@@ -88,12 +86,8 @@ final GoRouter appRouter = GoRouter(
       path: '/reader/:chapterId',
       builder: (context, state) {
         final chapterId = state.pathParameters['chapterId']!;
-        final chapterNumber =
-            state.uri.queryParameters['chapterNumber'] ?? '';
-        return ReaderScreen(
-          chapterId: chapterId,
-          chapterNumber: chapterNumber,
-        );
+        final chapterNumber = state.uri.queryParameters['chapterNumber'] ?? '';
+        return ReaderScreen(chapterId: chapterId, chapterNumber: chapterNumber);
       },
     ),
     GoRoute(

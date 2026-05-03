@@ -45,13 +45,13 @@ class ProfileState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isLoading,
-        username,
-        email,
-        isAnonymous,
-        isPremium,
-        mangaRead,
-        chaptersRead,
-        streakDays,
-      ];
+    isLoading,
+    username,
+    email,
+    isAnonymous,
+    isPremium,
+    mangaRead,
+    chaptersRead,
+    streakDays,
+  ];
 }
