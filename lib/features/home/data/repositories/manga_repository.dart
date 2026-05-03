@@ -41,4 +41,33 @@ class MangaRepository {
       rethrow;
     }
   }
+  /// Fetches the featured manga.
+  Future<Manga> getFeaturedManga() async {
+    try {
+      return await _dataSource.fetchFeaturedManga();
+    } catch (e, s) {
+      developer.log('Failed to fetch featured manga', name: 'MangaRepository', error: e, stackTrace: s);
+      rethrow;
+    }
+  }
+
+  /// Fetches trending mangas.
+  Future<List<Manga>> getTrendingMangas() async {
+    try {
+      return await _dataSource.fetchTrendingMangas();
+    } catch (e, s) {
+      developer.log('Failed to fetch trending mangas', name: 'MangaRepository', error: e, stackTrace: s);
+      rethrow;
+    }
+  }
+
+  /// Fetches recently updated mangas.
+  Future<List<Manga>> getRecentlyUpdatedMangas() async {
+    try {
+      return await _dataSource.fetchRecentlyUpdatedMangas();
+    } catch (e, s) {
+      developer.log('Failed to fetch recently updated mangas', name: 'MangaRepository', error: e, stackTrace: s);
+      rethrow;
+    }
+  }
 }

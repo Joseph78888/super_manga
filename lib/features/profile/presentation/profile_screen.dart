@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/data/datasources/auth_remote_data_source.dart';
 import '../../auth/data/repositories/auth_repository_impl.dart';
+import '../data/datasources/profile_remote_data_source.dart';
+import '../data/repositories/profile_repository.dart';
 import 'cubit/profile_cubit.dart';
 import 'cubit/profile_state.dart';
 
@@ -18,6 +20,11 @@ class ProfileScreen extends StatelessWidget {
       create: (context) => ProfileCubit(
         authRepository: AuthRepositoryImpl(
           remoteDataSource: SupabaseAuthRemoteDataSource(
+            supabaseClient: Supabase.instance.client,
+          ),
+        ),
+        profileRepository: ProfileRepository(
+          remoteDataSource: SupabaseProfileRemoteDataSource(
             supabaseClient: Supabase.instance.client,
           ),
         ),

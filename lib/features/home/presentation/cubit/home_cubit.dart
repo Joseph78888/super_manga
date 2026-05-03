@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/manga.dart';
 import '../../data/repositories/manga_repository.dart';
 import 'home_state.dart';
 
@@ -14,8 +15,17 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> loadMangas() async {
     emit(const HomeLoading());
     try {
-      final mangas = await _mangaRepository.getMangaList();
-      emit(HomeLoaded(mangas));
+      final results = await Future.wait([
+        _mangaRepository.getFeaturedManga(),
+        _mangaRepository.getTrendingMangas(),
+        _mangaRepository.getRecentlyUpdatedMangas(),
+      ]);
+
+      emit(HomeLoaded(
+        featuredManga: results[0] as Manga,
+        trendingMangas: results[1] as List<Manga>,
+        recentMangas: results[2] as List<Manga>,
+      ));
     } catch (e) {
       emit(HomeError(e.toString()));
     }
