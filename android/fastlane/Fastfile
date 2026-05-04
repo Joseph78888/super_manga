@@ -21,11 +21,11 @@ platform :android do
     sh "flutter clean"
     sh "flutter build apk --release --no-tree-shake-icons"
     firebase_app_distribution(
-      app: "1:122514249495:android:692598f646b0c85042c952",
-      firebase_cli_token: "1//03XhO-H3glHSCCgYIARAAGAMSNwF-L9IrbCgvkgWBQMB2rwlgZtgf8bx27BxHlltZAmQ4gIx7knyyhyEckc9WrnP6K4CowLnY0Ao",
+      app: ENV["FIREBASE_APP_ID_ANDROID"],
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
       android_artifact_path: "../build/app/outputs/flutter-apk/app-release.apk",
       android_artifact_type: "APK",
-      testers: "mohammedemad2001c@gmail.com, yousifkhalid544@gmail.com",
+      testers: ENV["FIREBASE_TESTERS"],
       release_notes: "first fastlane release app distribution"
     )
   end
