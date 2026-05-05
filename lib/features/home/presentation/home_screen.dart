@@ -90,6 +90,10 @@ class _HomeView extends StatelessWidget {
 
             return Skeletonizer(
               enabled: isLoading,
+              effect: ShimmerEffect(
+                baseColor: Colors.grey[900]!.withOpacity(0.5),
+                highlightColor: Colors.grey[800]!.withOpacity(0.5),
+              ),
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [

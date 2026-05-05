@@ -53,16 +53,17 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                   child: GradientCard(
                     height: 220,
                     gradientColors: colors.featuredGradient,
+                    padding: EdgeInsets.zero,
                     child: Stack(
                       children: [
                         // Cover image as background
                         Positioned.fill(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(24),
                             child: CachedNetworkImage(
                               imageUrl: manga.coverUrl,
                               fit: BoxFit.cover,
-                              color: Colors.black.withOpacity(0.55),
+                              color: Colors.black.withOpacity(0.33),
                               colorBlendMode: BlendMode.darken,
                               errorWidget: (_, __, ___) =>
                                   const SizedBox.shrink(),
@@ -71,60 +72,68 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                         ),
 
                         // Content overlay
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const PillBadge(text: 'FEATURED'),
-                                if (manga.rating != null)
-                                  PillBadge(
-                                    text: manga.rating!.toStringAsFixed(1),
-                                    backgroundColor: Colors.black.withOpacity(
-                                      0.4,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const PillBadge(text: 'FEATURED'),
+                                    if (manga.rating != null)
+                                      PillBadge(
+                                        text: manga.rating!.toStringAsFixed(1),
+                                        backgroundColor: Colors.black
+                                            .withOpacity(0.4),
+                                        textColor: Colors.amber,
+                                      ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                PillBadge(
+                                  text: manga.status.toUpperCase(),
+                                  backgroundColor:
+                                      Colors.deepPurpleAccent.shade700,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  manga.titleEn,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                                if (manga.description != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    manga.description!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 13,
+                                      height: 1.4,
                                     ),
-                                    textColor: Colors.amber,
+                                  ),
+                                ],
+                                const SizedBox(height: 16),
+                                if (manga.author != null)
+                                  Text(
+                                    manga.author!,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.6),
+                                      fontSize: 12,
+                                    ),
                                   ),
                               ],
                             ),
-                            const Spacer(),
-                            PillBadge(
-                              text: manga.status.toUpperCase(),
-                              backgroundColor: Colors.white24,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              manga.titleEn,
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                            ),
-                            if (manga.description != null) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                manga.description!,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 13,
-                                  height: 1.4,
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 16),
-                            if (manga.author != null)
-                              Text(
-                                manga.author!,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
-                                  fontSize: 12,
-                                ),
-                              ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
