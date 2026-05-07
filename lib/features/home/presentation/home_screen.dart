@@ -76,6 +76,14 @@ class _HomeViewState extends State<_HomeView> {
     final seed =
         user?.userMetadata?['username'] as String? ?? user?.id ?? 'guest';
     final avatarSvg = multiavatar(seed);
+    final isGuest =
+        user == null || (user.isAnonymous);
+    final displayName =
+        isGuest
+            ? 'Super Manga'
+            : (user.userMetadata?['username'] as String? ??
+                user.email?.split('@').first ??
+                'Super Manga');
 
     return Scaffold(
       body: SafeArea(
@@ -134,9 +142,9 @@ class _HomeViewState extends State<_HomeView> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
-                                  'Super Manga',
-                                  style: TextStyle(
+                                Text(
+                                  displayName,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
