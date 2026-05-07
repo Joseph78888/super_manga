@@ -32,8 +32,24 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _HomeView extends StatelessWidget {
+class _HomeView extends StatefulWidget {
   const _HomeView();
+
+  @override
+  State<_HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<_HomeView> {
+  /// Counts how many times the user has pulled to refresh.
+  /// The actual reload fires only on every 3rd attempt.
+  int _refreshAttempts = 0;
+
+  Future<void> _onRefresh() async {
+    _refreshAttempts++;
+    if (_refreshAttempts % 3 == 1) {
+      await context.read<HomeCubit>().loadMangas();
+    }
+  }
 
   List<Manga> _getMockMangas() {
     return List.generate(
@@ -94,74 +110,79 @@ class _HomeView extends StatelessWidget {
                 baseColor: Colors.grey[900]!.withOpacity(0.5),
                 highlightColor: Colors.grey[800]!.withOpacity(0.5),
               ),
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Good morning',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontSize: 14,
+              child: RefreshIndicator.adaptive(
+                onRefresh: _onRefresh,
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Good morning',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.5),
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                'Super Manga',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: -0.5,
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Super Manga',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: -0.5,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () => context.push('/profile'),
-                            child: CircleAvatar(
-                              radius: 22,
-                              backgroundColor: const Color(0xFF1E1A33),
-                              child: ClipOval(
-                                child: SvgPicture.string(
-                                  avatarSvg,
-                                  width: 44,
-                                  height: 44,
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () => context.push('/profile'),
+                              child: CircleAvatar(
+                                radius: 22,
+                                backgroundColor: const Color(0xFF1E1A33),
+                                child: ClipOval(
+                                  child: SvgPicture.string(
+                                    avatarSvg,
+                                    width: 44,
+                                    height: 44,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 32),
-                      child: Column(
-                        children: [
-                          if (featuredMangas.isNotEmpty)
-                            FeaturedCarousel(mangas: featuredMangas),
-                          const SizedBox(height: 24),
-                          if (trendingMangas.isNotEmpty)
-                            TrendingList(mangas: trendingMangas),
-                          const SizedBox(height: 24),
-                          if (recentMangas.isNotEmpty)
-                            RecentlyUpdatedList(mangas: recentMangas),
-                          const SizedBox(height: 32),
-                        ],
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Column(
+                          children: [
+                            if (featuredMangas.isNotEmpty)
+                              FeaturedCarousel(mangas: featuredMangas),
+                            const SizedBox(height: 24),
+                            if (trendingMangas.isNotEmpty)
+                              TrendingList(mangas: trendingMangas),
+                            const SizedBox(height: 24),
+                            if (recentMangas.isNotEmpty)
+                              RecentlyUpdatedList(mangas: recentMangas),
+                            const SizedBox(height: 32),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
