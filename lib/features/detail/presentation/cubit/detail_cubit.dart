@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/error/supabase_error_handler.dart';
 import '../../../home/data/repositories/manga_repository.dart';
 import '../../../home/data/repositories/chapter_repository.dart';
 import 'detail_state.dart';
@@ -31,7 +32,8 @@ class DetailCubit extends Cubit<DetailState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+      final message = SupabaseErrorHandler.handle(e);
+      emit(state.copyWith(isLoading: false, error: message));
     }
   }
 

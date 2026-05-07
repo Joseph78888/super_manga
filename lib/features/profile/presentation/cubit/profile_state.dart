@@ -9,6 +9,7 @@ class ProfileState extends Equatable {
   final int mangaRead;
   final int chaptersRead;
   final int streakDays;
+  final String? errorMessage;
 
   const ProfileState({
     this.isLoading = true,
@@ -19,6 +20,7 @@ class ProfileState extends Equatable {
     this.mangaRead = 0,
     this.chaptersRead = 0,
     this.streakDays = 0,
+    this.errorMessage,
   });
 
   ProfileState copyWith({
@@ -30,6 +32,7 @@ class ProfileState extends Equatable {
     int? mangaRead,
     int? chaptersRead,
     int? streakDays,
+    String? errorMessage,
   }) {
     return ProfileState(
       isLoading: isLoading ?? this.isLoading,
@@ -40,6 +43,7 @@ class ProfileState extends Equatable {
       mangaRead: mangaRead ?? this.mangaRead,
       chaptersRead: chaptersRead ?? this.chaptersRead,
       streakDays: streakDays ?? this.streakDays,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
@@ -53,5 +57,6 @@ class ProfileState extends Equatable {
     mangaRead,
     chaptersRead,
     streakDays,
+    errorMessage,
   ];
 }

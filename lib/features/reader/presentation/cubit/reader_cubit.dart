@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/error/supabase_error_handler.dart';
 import '../../data/repositories/page_repository.dart';
 import 'reader_state.dart';
 
@@ -23,7 +24,8 @@ class ReaderCubit extends Cubit<ReaderState> {
       final pages = await _pageRepository.getPagesByChapterId(chapterId);
       emit(state.copyWith(isLoading: false, pages: pages, currentPage: 1));
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
+      final message = SupabaseErrorHandler.handle(e);
+      emit(state.copyWith(isLoading: false, error: message));
     }
   }
 

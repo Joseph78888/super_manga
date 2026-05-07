@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/error/supabase_error_handler.dart';
 import '../../domain/manga.dart';
 import '../../data/repositories/manga_repository.dart';
 import 'home_state.dart';
@@ -29,7 +30,8 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } catch (e) {
-      emit(HomeError(e.toString()));
+      final message = SupabaseErrorHandler.handle(e);
+      emit(HomeError(message));
     }
   }
 }
