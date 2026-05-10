@@ -37,7 +37,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "default"
-            applicationIdSuffix = ".dev"
+           // applicationIdSuffix = ".dev"
             resValue ("string", "app_name", "SuperManga DEV")
         }
         create("prod") {

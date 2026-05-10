@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/error/supabase_error_handler.dart';
-import '../../domain/manga.dart';
 import '../../data/repositories/manga_repository.dart';
 import 'home_state.dart';
 
@@ -13,25 +12,33 @@ class HomeCubit extends Cubit<HomeState> {
       super(const HomeInitial());
 
   /// Triggers the initial data load.
-  Future<void> loadMangas() async {
-    emit(const HomeLoading());
+  Future<void> loadMangas({String? type}) async {
+    final currentType = type ?? state.selectedType;
+    emit(HomeLoading(selectedType: currentType));
     try {
       final results = await Future.wait([
-        _mangaRepository.getFeaturedMangas(),
-        _mangaRepository.getTrendingMangas(),
-        _mangaRepository.getRecentlyUpdatedMangas(),
+        _mangaRepository.getFeaturedMangas(type: currentType),
+        _mangaRepository.getTrendingMangas(type: currentType),
+        _mangaRepository.getRecentlyUpdatedMangas(type: currentType),
       ]);
 
       emit(
         HomeLoaded(
-          featuredMangas: results[0] as List<Manga>,
-          trendingMangas: results[1] as List<Manga>,
-          recentMangas: results[2] as List<Manga>,
+          featuredMangas: results[0],
+          trendingMangas: results[1],
+          recentMangas: results[2],
+          selectedType: currentType,
         ),
       );
     } catch (e) {
       final message = SupabaseErrorHandler.handle(e);
-      emit(HomeError(message));
+      emit(HomeError(message, selectedType: currentType));
     }
+  }
+
+  /// Changes the active content filter.
+  void changeType(String type) {
+    if (state.selectedType == type) return;
+    loadMangas(type: type);
   }
 }

@@ -19,6 +19,7 @@ Manga _$MangaFromJson(Map<String, dynamic> json) => Manga(
   createdAt: json['created_at'] == null
       ? null
       : DateTime.parse(json['created_at'] as String),
+  type: json['type'] as String?,
   genres: Manga._genresFromJson(json['manga_genres']),
 );
 
@@ -33,5 +34,6 @@ Map<String, dynamic> _$MangaToJson(Manga instance) => <String, dynamic>{
   'author': instance.author,
   'artist': instance.artist,
   'created_at': instance.createdAt?.toIso8601String(),
+  'type': instance.type,
   'manga_genres': instance.genres,
 };

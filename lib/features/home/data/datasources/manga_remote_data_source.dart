@@ -10,13 +10,13 @@ abstract class MangaRemoteDataSource {
   Future<Manga> fetchMangaById(String id);
 
   /// Returns top 5 highest rated mangas to be featured.
-  Future<List<Manga>> fetchFeaturedMangas();
+  Future<List<Manga>> fetchFeaturedMangas({String? type});
 
   /// Returns top 10 mangas ordered by rating.
-  Future<List<Manga>> fetchTrendingMangas();
+  Future<List<Manga>> fetchTrendingMangas({String? type});
 
   /// Returns 10 most recently created mangas.
-  Future<List<Manga>> fetchRecentlyUpdatedMangas();
+  Future<List<Manga>> fetchRecentlyUpdatedMangas({String? type});
 }
 
 /// Supabase implementation of [MangaRemoteDataSource].
@@ -47,39 +47,60 @@ class SupabaseMangaRemoteDataSource implements MangaRemoteDataSource {
   }
 
   @override
-  Future<List<Manga>> fetchFeaturedMangas() async {
+  Future<List<Manga>> fetchFeaturedMangas({String? type}) async {
     // Top 5 highest rated mangas
-    final response = await supabaseClient
+    var query = supabaseClient
         .from('manga')
-        .select('*, manga_genres(genres(*))')
+        .select('*, manga_genres(genres(*))');
+    
+    if (type != null && type != 'All') {
+      query = query.eq('type', type);
+    }
+
+    final response = await query
         .order('rating', ascending: false)
         .limit(5);
+
     return (response as List<dynamic>)
         .map((json) => Manga.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
   @override
-  Future<List<Manga>> fetchTrendingMangas() async {
+  Future<List<Manga>> fetchTrendingMangas({String? type}) async {
     // Top 10 by rating
-    final response = await supabaseClient
+    var query = supabaseClient
         .from('manga')
-        .select('*, manga_genres(genres(*))')
+        .select('*, manga_genres(genres(*))');
+
+    if (type != null && type != 'All') {
+      query = query.eq('type', type);
+    }
+
+    final response = await query
         .order('rating', ascending: false)
         .limit(10);
+
     return (response as List<dynamic>)
         .map((json) => Manga.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
   @override
-  Future<List<Manga>> fetchRecentlyUpdatedMangas() async {
+  Future<List<Manga>> fetchRecentlyUpdatedMangas({String? type}) async {
     // Top 10 by creation date
-    final response = await supabaseClient
+    var query = supabaseClient
         .from('manga')
-        .select('*, manga_genres(genres(*))')
+        .select('*, manga_genres(genres(*))');
+
+    if (type != null && type != 'All') {
+      query = query.eq('type', type);
+    }
+
+    final response = await query
         .order('created_at', ascending: false)
         .limit(10);
+
     return (response as List<dynamic>)
         .map((json) => Manga.fromJson(json as Map<String, dynamic>))
         .toList();

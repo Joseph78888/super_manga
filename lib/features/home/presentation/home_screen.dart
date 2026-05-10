@@ -13,6 +13,7 @@ import 'cubit/home_state.dart';
 import 'widgets/featured_carousel.dart';
 import 'widgets/trending_list.dart';
 import 'widgets/recently_updated_list.dart';
+import 'widgets/filter_buttons.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -66,6 +67,7 @@ class _HomeViewState extends State<_HomeView> {
             'This is a mock description that is long enough to show some skeleton text lines.',
         genres: [],
         createdAt: null,
+        type: 'Manga',
       ),
     );
   }
@@ -176,6 +178,12 @@ class _HomeViewState extends State<_HomeView> {
                         padding: const EdgeInsets.only(bottom: 32),
                         child: Column(
                           children: [
+                            FilterButtons(
+                              selectedType: state.selectedType,
+                              onTypeSelected: (type) =>
+                                  context.read<HomeCubit>().changeType(type),
+                            ),
+                            const SizedBox(height: 24),
                             if (featuredMangas.isNotEmpty)
                               FeaturedCarousel(mangas: featuredMangas),
                             const SizedBox(height: 24),
