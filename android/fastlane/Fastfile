@@ -23,7 +23,7 @@ platform :android do
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID_ANDROID"],
       firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
-      android_artifact_path: "../build/app/outputs/flutter-apk/app-release.apk",
+      android_artifact_path: "../build/app/outputs/apk/dev/debug/app-dev-debug.apk",
       android_artifact_type: "APK",
       testers: ENV["FIREBASE_TESTERS"],
       release_notes: "first fastlane release app distribution"
