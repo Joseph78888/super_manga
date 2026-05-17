@@ -67,5 +67,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'flutter-prep-96e13.firebasestorage.app',
     iosBundleId: 'com.example.superManga',
   );
-
 }

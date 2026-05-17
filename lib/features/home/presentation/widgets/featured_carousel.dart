@@ -6,115 +6,160 @@ import '../../../../core/widgets/gradient_card.dart';
 import '../../../../core/widgets/pill_badge.dart';
 import '../../../home/domain/manga.dart';
 
-/// Displays the first manga in the list as a featured hero card.
-class FeaturedCarousel extends StatelessWidget {
-  final Manga manga;
+/// Displays the featured mangas in a horizontally scrolling carousel.
+class FeaturedCarousel extends StatefulWidget {
+  final List<Manga> mangas;
 
-  const FeaturedCarousel({super.key, required this.manga});
+  const FeaturedCarousel({super.key, required this.mangas});
+
+  @override
+  State<FeaturedCarousel> createState() => _FeaturedCarouselState();
+}
+
+class _FeaturedCarouselState extends State<FeaturedCarousel> {
+  final PageController _pageController = PageController(viewportFraction: 0.93);
+  int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.mangas.isEmpty) return const SizedBox.shrink();
+
     final colors = Theme.of(context).extension<MangaAppColors>()!;
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: GestureDetector(
-            onTap: () => context.push('/detail/${manga.id}'),
-            child: GradientCard(
-              height: 220,
-              gradientColors: colors.featuredGradient,
-              child: Stack(
-                children: [
-                  // Cover image as background
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: CachedNetworkImage(
-                        imageUrl: manga.coverUrl,
-                        fit: BoxFit.cover,
-                        color: Colors.black.withOpacity(0.55),
-                        colorBlendMode: BlendMode.darken,
-                        errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                      ),
-                    ),
-                  ),
-
-                  // Content overlay
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const PillBadge(text: 'FEATURED'),
-                          if (manga.rating != null)
-                            PillBadge(
-                              text: manga.rating!.toStringAsFixed(1),
-                              backgroundColor: Colors.black.withOpacity(0.4),
-                              textColor: Colors.amber,
+        SizedBox(
+          height: 220,
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemCount: widget.mangas.length,
+            itemBuilder: (context, index) {
+              final manga = widget.mangas[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: GestureDetector(
+                  onTap: () => context.push('/detail/${manga.id}'),
+                  child: GradientCard(
+                    height: 220,
+                    gradientColors: colors.featuredGradient,
+                    padding: EdgeInsets.zero,
+                    child: Stack(
+                      children: [
+                        // Cover image as background
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: CachedNetworkImage(
+                              imageUrl: manga.coverUrl,
+                              fit: BoxFit.cover,
+                              color: Colors.black.withOpacity(0.33),
+                              colorBlendMode: BlendMode.darken,
+                              errorWidget: (_, __, ___) =>
+                                  const SizedBox.shrink(),
                             ),
-                        ],
-                      ),
-                      const Spacer(),
-                      PillBadge(
-                        text: manga.status.toUpperCase(),
-                        backgroundColor: Colors.white24,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        manga.titleEn,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                          ),
+                        ),
+
+                        // Content overlay
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const PillBadge(text: 'FEATURED'),
+                                    if (manga.rating != null)
+                                      PillBadge(
+                                        text: manga.rating!.toStringAsFixed(1),
+                                        backgroundColor: Colors.black
+                                            .withOpacity(0.4),
+                                        textColor: Colors.amber,
+                                      ),
+                                  ],
                                 ),
-                      ),
-                      if (manga.description != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          manga.description!,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 13,
-                            height: 1.4,
+                                const Spacer(),
+                                PillBadge(
+                                  text: manga.status.toUpperCase(),
+                                  backgroundColor:
+                                      Colors.deepPurpleAccent.shade700,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  manga.titleEn,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                                if (manga.description != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    manga.description!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 13,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 16),
+                                if (manga.author != null)
+                                  Text(
+                                    manga.author!,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.6),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
-                      const SizedBox(height: 16),
-                      if (manga.author != null)
-                        Text(
-                          manga.author!,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 12,
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
 
-        // Page indicator (single dot for single manga)
+        // Page indicators
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildDot(true),
-          ],
+          children: List.generate(
+            widget.mangas.length,
+            (index) => _buildDot(index == _currentPage),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildDot(bool isActive) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.symmetric(horizontal: 3),
       width: isActive ? 16 : 6,
       height: 6,

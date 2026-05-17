@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Centralized theme configuration for Super Manga.
-/// 
+///
 /// Follows Material 3 design principles and focuses primarily on a premium deep dark mode.
 class AppTheme {
   static const Color primaryBackgroundColor = Color(0xFF0B0914);
   static const Color _seedColor = Color(0xFF815BED);
-  
+
   static const Color navBarColor = Color(0xFF0F0C1B);
   static const Color accentRed = Color(0xFFE55B5B);
   static const Color textMuted = Color(0xFF8B8A95);
@@ -29,8 +29,13 @@ class AppTheme {
         onSurface: Colors.white,
       ),
       textTheme: baseTextTheme.copyWith(
-        titleLarge: baseTextTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, letterSpacing: -0.5),
-        titleMedium: baseTextTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        titleLarge: baseTextTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          letterSpacing: -0.5,
+        ),
+        titleMedium: baseTextTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: primaryBackgroundColor,
@@ -44,8 +49,14 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         showUnselectedLabels: true,
-        selectedLabelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+        selectedLabelStyle: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+        ),
       ),
       extensions: const <ThemeExtension<dynamic>>[
         MangaAppColors(
@@ -133,7 +144,11 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
   MangaAppColors lerp(ThemeExtension<MangaAppColors>? other, double t) {
     if (other is! MangaAppColors) return this;
     return MangaAppColors(
-      featuredGradient: _lerpGradient(featuredGradient, other.featuredGradient, t),
+      featuredGradient: _lerpGradient(
+        featuredGradient,
+        other.featuredGradient,
+        t,
+      ),
       trendingBlue: _lerpGradient(trendingBlue, other.trendingBlue, t),
       trendingRed: _lerpGradient(trendingRed, other.trendingRed, t),
       trendingGreen: _lerpGradient(trendingGreen, other.trendingGreen, t),
@@ -143,15 +158,23 @@ class MangaAppColors extends ThemeExtension<MangaAppColors> {
       surfaceCard: Color.lerp(surfaceCard, other.surfaceCard, t)!,
       surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t)!,
       surfaceInput: Color.lerp(surfaceInput, other.surfaceInput, t)!,
-      headerGradientStart: Color.lerp(headerGradientStart, other.headerGradientStart, t)!,
-      headerGradientEnd: Color.lerp(headerGradientEnd, other.headerGradientEnd, t)!,
+      headerGradientStart: Color.lerp(
+        headerGradientStart,
+        other.headerGradientStart,
+        t,
+      )!,
+      headerGradientEnd: Color.lerp(
+        headerGradientEnd,
+        other.headerGradientEnd,
+        t,
+      )!,
     );
   }
-  
+
   List<Color> _lerpGradient(List<Color> a, List<Color> b, double t) {
     return List.generate(a.length, (index) {
       if (index < b.length) {
-         return Color.lerp(a[index], b[index], t)!;
+        return Color.lerp(a[index], b[index], t)!;
       }
       return a[index];
     });

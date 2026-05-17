@@ -136,7 +136,11 @@ class _DiagonalStripePainter extends CustomPainter {
 
     const spacing = 15.0;
     for (double i = -size.height; i < size.width; i += spacing) {
-      canvas.drawLine(Offset(i, 0), Offset(i + size.height, size.height), paint);
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i + size.height, size.height),
+        paint,
+      );
     }
   }
 

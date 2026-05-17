@@ -21,18 +21,18 @@ class HomeLoading extends HomeState {
 
 /// Manga list fetched successfully.
 class HomeLoaded extends HomeState {
-  final Manga featuredManga;
+  final List<Manga> featuredMangas;
   final List<Manga> trendingMangas;
   final List<Manga> recentMangas;
 
   const HomeLoaded({
-    required this.featuredManga,
+    required this.featuredMangas,
     required this.trendingMangas,
     required this.recentMangas,
   });
 
   @override
-  List<Object?> get props => [featuredManga, trendingMangas, recentMangas];
+  List<Object?> get props => [featuredMangas, trendingMangas, recentMangas];
 }
 
 /// A fetch error occurred.

@@ -29,12 +29,19 @@ class AuthState extends Equatable {
     return AuthState(
       mode: mode ?? this.mode,
       isPasswordObscured: isPasswordObscured ?? this.isPasswordObscured,
-      isConfirmPasswordObscured: isConfirmPasswordObscured ?? this.isConfirmPasswordObscured,
+      isConfirmPasswordObscured:
+          isConfirmPasswordObscured ?? this.isConfirmPasswordObscured,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [mode, isPasswordObscured, isConfirmPasswordObscured, isLoading, errorMessage];
+  List<Object?> get props => [
+    mode,
+    isPasswordObscured,
+    isConfirmPasswordObscured,
+    isLoading,
+    errorMessage,
+  ];
 }

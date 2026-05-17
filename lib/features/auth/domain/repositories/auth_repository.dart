@@ -7,10 +7,7 @@ abstract class AuthRepository {
     required String username,
   });
 
-  Future<UserEntity> signIn({
-    required String email,
-    required String password,
-  });
+  Future<UserEntity> signIn({required String email, required String password});
 
   Future<void> signInWithGoogle();
   Future<void> signInAnonymously();

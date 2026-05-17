@@ -41,11 +41,11 @@ class ReaderState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isMenuVisible,
-        currentPage,
-        pages,
-        isLoading,
-        chapterNumber,
-        error,
-      ];
+    isMenuVisible,
+    currentPage,
+    pages,
+    isLoading,
+    chapterNumber,
+    error,
+  ];
 }

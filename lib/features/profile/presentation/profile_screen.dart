@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:multiavatar/multiavatar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/data/datasources/auth_remote_data_source.dart';
 import '../../auth/data/repositories/auth_repository_impl.dart';
@@ -40,7 +42,7 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<MangaAppColors>()!;
-    
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -64,22 +66,22 @@ class ProfileView extends StatelessWidget {
             slivers: [
               // Hero Profile Header
               SliverToBoxAdapter(
-                child: state.isLoading 
+                child: state.isLoading
                     ? const SizedBox(
                         height: 260,
-                        child: Center(child: CircularProgressIndicator(color: AppTheme.accentRed)),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.accentRed,
+                          ),
+                        ),
                       )
                     : _buildHeroProfile(state, colors),
               ),
 
               // Statistics Dashboard
-              SliverToBoxAdapter(
-                child: _buildStatisticsCard(state),
-              ),
+              SliverToBoxAdapter(child: _buildStatisticsCard(state)),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 32),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
               // Settings Options
               SliverToBoxAdapter(
@@ -88,23 +90,47 @@ class ProfileView extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildSettingsGroup('Account', [
-                        _buildSettingTile(Icons.person_outline, 'Personal Information'),
-                        _buildSettingTile(Icons.workspace_premium_outlined, 'Premium Membership', trailing: 'Gold'),
-                        _buildSettingTile(Icons.payment_outlined, 'Payment Methods'),
+                        _buildSettingTile(
+                          Icons.person_outline,
+                          'Personal Information',
+                        ),
+                        _buildSettingTile(
+                          Icons.workspace_premium_outlined,
+                          'Premium Membership',
+                          trailing: 'Gold',
+                        ),
+                        _buildSettingTile(
+                          Icons.payment_outlined,
+                          'Payment Methods',
+                        ),
                       ]),
                       const SizedBox(height: 24),
                       _buildSettingsGroup('Preferences', [
-                        _buildSettingTile(Icons.notifications_outlined, 'Notifications'),
-                        _buildSettingTile(Icons.download_outlined, 'Downloads', trailing: '1.2 GB'),
-                        _buildSettingTile(Icons.color_lens_outlined, 'Appearance', trailing: 'Dark'),
+                        _buildSettingTile(
+                          Icons.notifications_outlined,
+                          'Notifications',
+                        ),
+                        _buildSettingTile(
+                          Icons.download_outlined,
+                          'Downloads',
+                          trailing: '1.2 GB',
+                        ),
+                        _buildSettingTile(
+                          Icons.color_lens_outlined,
+                          'Appearance',
+                          trailing: 'Dark',
+                        ),
                       ]),
                       const SizedBox(height: 24),
                       _buildSettingsGroup('Support', [
                         _buildSettingTile(Icons.help_outline, 'Help Center'),
-                        _buildSettingTile(Icons.info_outline, 'About Super Manga'),
+                        _buildSettingTile(
+                          Icons.info_outline,
+                          'About Super Manga',
+                        ),
                       ]),
                       const SizedBox(height: 32),
-                      
+
                       // Log Out Button
                       SizedBox(
                         width: double.infinity,
@@ -157,10 +183,7 @@ class ProfileView extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF2E1C4B),
-                Color(0xFF0F0B1A),
-              ],
+              colors: [Color(0xFF2E1C4B), Color(0xFF0F0B1A)],
             ),
           ),
         ),
@@ -185,8 +208,14 @@ class ProfileView extends StatelessWidget {
                     ],
                     color: const Color(0xFF1E1A33),
                   ),
-                  child: const Center(
-                    child: Icon(Icons.person, size: 50, color: Colors.white54),
+                  child: ClipOval(
+                    child: SvgPicture.string(
+                      multiavatar(
+                        state.username.isEmpty ? 'guest' : state.username,
+                      ),
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                 ),
               ),
@@ -211,7 +240,10 @@ class ProfileView extends StatelessWidget {
               if (state.isPremium) ...[
                 const SizedBox(height: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.amber.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -326,9 +358,7 @@ class ProfileView extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
-          child: Column(
-            children: children,
-          ),
+          child: Column(children: children),
         ),
       ],
     );
@@ -366,7 +396,11 @@ class ProfileView extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
-          Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.3), size: 14),
+          Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.white.withOpacity(0.3),
+            size: 14,
+          ),
         ],
       ),
       onTap: () {},

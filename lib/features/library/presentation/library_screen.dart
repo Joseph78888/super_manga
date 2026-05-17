@@ -72,7 +72,9 @@ class LibraryView extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF161423), // Dark background for the tab bar
+                    color: const Color(
+                      0xFF161423,
+                    ), // Dark background for the tab bar
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.white.withOpacity(0.05)),
                   ),
@@ -84,21 +86,31 @@ class LibraryView extends StatelessWidget {
                           final isSelected = state.selectedCategory == category;
                           return Expanded(
                             child: GestureDetector(
-                              onTap: () => context.read<LibraryCubit>().changeCategory(category),
+                              onTap: () => context
+                                  .read<LibraryCubit>()
+                                  .changeCategory(category),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? AppTheme.accentRed : Colors.transparent,
+                                  color: isSelected
+                                      ? AppTheme.accentRed
+                                      : Colors.transparent,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
                                   category,
                                   style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.white.withOpacity(0.4),
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.white.withOpacity(0.4),
                                     fontSize: 13,
-                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -138,7 +150,7 @@ class LibraryView extends StatelessWidget {
                       // Future: add an Icon inside if needed, but the mockup just shows the empty shape
                     ),
                     const SizedBox(height: 32),
-                    
+
                     const Text(
                       'Your library is empty',
                       style: TextStyle(
@@ -148,7 +160,7 @@ class LibraryView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    
+
                     Text(
                       'Add manga from the browse or detail screen',
                       textAlign: TextAlign.center,
@@ -159,7 +171,7 @@ class LibraryView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 48),
-                    
+
                     // Primary Action Button
                     SizedBox(
                       width: double.infinity,

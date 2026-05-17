@@ -8,7 +8,7 @@ class MangaRepository {
   final MangaRemoteDataSource _dataSource;
 
   MangaRepository({required MangaRemoteDataSource dataSource})
-      : _dataSource = dataSource;
+    : _dataSource = dataSource;
 
   /// Fetches the full manga list. Returns an empty list on error.
   Future<List<Manga>> getMangaList() async {
@@ -41,12 +41,18 @@ class MangaRepository {
       rethrow;
     }
   }
-  /// Fetches the featured manga.
-  Future<Manga> getFeaturedManga() async {
+
+  /// Fetches the featured mangas.
+  Future<List<Manga>> getFeaturedMangas() async {
     try {
-      return await _dataSource.fetchFeaturedManga();
+      return await _dataSource.fetchFeaturedMangas();
     } catch (e, s) {
-      developer.log('Failed to fetch featured manga', name: 'MangaRepository', error: e, stackTrace: s);
+      developer.log(
+        'Failed to fetch featured mangas',
+        name: 'MangaRepository',
+        error: e,
+        stackTrace: s,
+      );
       rethrow;
     }
   }
@@ -56,7 +62,12 @@ class MangaRepository {
     try {
       return await _dataSource.fetchTrendingMangas();
     } catch (e, s) {
-      developer.log('Failed to fetch trending mangas', name: 'MangaRepository', error: e, stackTrace: s);
+      developer.log(
+        'Failed to fetch trending mangas',
+        name: 'MangaRepository',
+        error: e,
+        stackTrace: s,
+      );
       rethrow;
     }
   }
@@ -66,7 +77,12 @@ class MangaRepository {
     try {
       return await _dataSource.fetchRecentlyUpdatedMangas();
     } catch (e, s) {
-      developer.log('Failed to fetch recently updated mangas', name: 'MangaRepository', error: e, stackTrace: s);
+      developer.log(
+        'Failed to fetch recently updated mangas',
+        name: 'MangaRepository',
+        error: e,
+        stackTrace: s,
+      );
       rethrow;
     }
   }

@@ -9,8 +9,8 @@ abstract class MangaRemoteDataSource {
   /// Returns a single manga record by [id].
   Future<Manga> fetchMangaById(String id);
 
-  /// Returns the highest rated manga to be featured.
-  Future<Manga> fetchFeaturedManga();
+  /// Returns top 5 highest rated mangas to be featured.
+  Future<List<Manga>> fetchFeaturedMangas();
 
   /// Returns top 10 mangas ordered by rating.
   Future<List<Manga>> fetchTrendingMangas();
@@ -38,21 +38,25 @@ class SupabaseMangaRemoteDataSource implements MangaRemoteDataSource {
 
   @override
   Future<Manga> fetchMangaById(String id) async {
-    final response =
-        await supabaseClient.from('manga').select('*, manga_genres(genres(*))').eq('id', id).single();
+    final response = await supabaseClient
+        .from('manga')
+        .select('*, manga_genres(genres(*))')
+        .eq('id', id)
+        .single();
     return Manga.fromJson(response);
   }
 
   @override
-  Future<Manga> fetchFeaturedManga() async {
-    // Pick the single highest rated manga
+  Future<List<Manga>> fetchFeaturedMangas() async {
+    // Top 5 highest rated mangas
     final response = await supabaseClient
         .from('manga')
         .select('*, manga_genres(genres(*))')
         .order('rating', ascending: false)
-        .limit(1)
-        .single();
-    return Manga.fromJson(response);
+        .limit(5);
+    return (response as List<dynamic>)
+        .map((json) => Manga.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   @override

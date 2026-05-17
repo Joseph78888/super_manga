@@ -6,7 +6,7 @@ class ProfileRepository {
   final ProfileRemoteDataSource _remoteDataSource;
 
   ProfileRepository({required ProfileRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+    : _remoteDataSource = remoteDataSource;
 
   Future<ProfileEntity?> getProfile(String userId) async {
     try {

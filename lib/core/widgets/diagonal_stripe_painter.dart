@@ -19,7 +19,11 @@ class DiagonalStripePainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     for (double i = -size.height; i < size.width; i += spacing) {
-      canvas.drawLine(Offset(i, 0), Offset(i + size.height, size.height), paint);
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i + size.height, size.height),
+        paint,
+      );
     }
   }
 
