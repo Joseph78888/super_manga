@@ -15,6 +15,7 @@ class Manga {
   final String? author;
   final String? artist;
   final DateTime? createdAt;
+  final String? type;
   @JsonKey(name: 'manga_genres', fromJson: _genresFromJson)
   final List<String>? genres;
 
@@ -29,6 +30,7 @@ class Manga {
     this.author,
     this.artist,
     this.createdAt,
+    this.type,
     this.genres,
   });
 

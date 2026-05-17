@@ -43,9 +43,9 @@ class MangaRepository {
   }
 
   /// Fetches the featured mangas.
-  Future<List<Manga>> getFeaturedMangas() async {
+  Future<List<Manga>> getFeaturedMangas({String? type}) async {
     try {
-      return await _dataSource.fetchFeaturedMangas();
+      return await _dataSource.fetchFeaturedMangas(type: type);
     } catch (e, s) {
       developer.log(
         'Failed to fetch featured mangas',
@@ -58,9 +58,9 @@ class MangaRepository {
   }
 
   /// Fetches trending mangas.
-  Future<List<Manga>> getTrendingMangas() async {
+  Future<List<Manga>> getTrendingMangas({String? type}) async {
     try {
-      return await _dataSource.fetchTrendingMangas();
+      return await _dataSource.fetchTrendingMangas(type: type);
     } catch (e, s) {
       developer.log(
         'Failed to fetch trending mangas',
@@ -73,9 +73,9 @@ class MangaRepository {
   }
 
   /// Fetches recently updated mangas.
-  Future<List<Manga>> getRecentlyUpdatedMangas() async {
+  Future<List<Manga>> getRecentlyUpdatedMangas({String? type}) async {
     try {
-      return await _dataSource.fetchRecentlyUpdatedMangas();
+      return await _dataSource.fetchRecentlyUpdatedMangas(type: type);
     } catch (e, s) {
       developer.log(
         'Failed to fetch recently updated mangas',
