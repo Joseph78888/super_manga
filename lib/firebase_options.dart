@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -49,22 +50,22 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCReSFw9J9y6AMQxmp6-Qyegj5Hi9SW0Bw',
-    appId: '1:122514249495:android:692598f646b0c85042c952',
-    messagingSenderId: '122514249495',
-    projectId: 'flutter-prep-96e13',
-    databaseURL: 'https://flutter-prep-96e13-default-rtdb.firebaseio.com',
-    storageBucket: 'flutter-prep-96e13.firebasestorage.app',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FirebaseOptions_APIkey']!,
+    appId: dotenv.env['FirebaseOptions_APPID']!,
+    messagingSenderId: dotenv.env['FirebaseOptions_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FirebaseOptions_PROJECT_ID']!,
+    databaseURL: dotenv.env['FirebaseOptions_DATABASE_URL']!,
+    storageBucket: dotenv.env['FirebaseOptions_STORAGE_BUCKET']!,
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDjPudV8B4M4n9nqz8jO51ZuMKa_2BbXXY',
-    appId: '1:122514249495:ios:f0cfcc6b3ac764ed42c952',
-    messagingSenderId: '122514249495',
-    projectId: 'flutter-prep-96e13',
-    databaseURL: 'https://flutter-prep-96e13-default-rtdb.firebaseio.com',
-    storageBucket: 'flutter-prep-96e13.firebasestorage.app',
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: dotenv.env['FirebaseOptions_APIkey']!,
+    appId: dotenv.env['FirebaseOptions_APPID']!,
+    messagingSenderId: dotenv.env['FirebaseOptions_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FirebaseOptions_PROJECT_ID']!,
+    databaseURL: dotenv.env['FirebaseOptions_DATABASE_URL']!,
+    storageBucket: dotenv.env['FirebaseOptions_STORAGE_BUCKET']!,
     iosBundleId: 'com.example.superManga',
   );
 }
