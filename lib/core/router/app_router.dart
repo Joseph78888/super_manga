@@ -57,8 +57,8 @@ final GoRouter appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/search',
-              builder: (context, state) => const SearchScreen(),
+              path: '/library',
+              builder: (context, state) => const LibraryScreen(),
             ),
           ],
         ),
@@ -66,8 +66,8 @@ final GoRouter appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/library',
-              builder: (context, state) => const LibraryScreen(),
+              path: '/profile',
+              builder: (context, state) => const ProfileScreen(),
             ),
           ],
         ),

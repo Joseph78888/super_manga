@@ -49,7 +49,8 @@ class FilterButtons extends StatelessWidget {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: customColors.featuredGradient.first.withOpacity(0.4),
+                          color: customColors.featuredGradient.first
+                              .withOpacity(0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -66,7 +67,9 @@ class FilterButtons extends StatelessWidget {
                 child: Text(
                   type,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.6),
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     letterSpacing: isSelected ? 0.2 : 0,
