@@ -5,14 +5,19 @@ import '../../../../core/widgets/manga_poster_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubit/browse_cubit.dart';
 import 'cubit/browse_state.dart';
+import 'package:super_manga/features/browse/presentation/cubit/search_cubit.dart';
+import 'package:super_manga/features/browse/presentation/cubit/search_state.dart';
 
 class BrowseScreen extends StatelessWidget {
   const BrowseScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BrowseCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => BrowseCubit()),
+        BlocProvider(create: (_) => SearchCubit()),
+      ],
       child: const BrowseView(),
     );
   }
@@ -121,6 +126,7 @@ class BrowseView extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -149,6 +155,41 @@ class BrowseView extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+
+            // Search Input Row
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    return TextField(
+                      onChanged: (value) =>
+                          context.read<SearchCubit>().updateSearchQuery(value),
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(
+                          0xFF1A1A2E,
+                        ), // Deep muted blue/purple
+                        hintText: 'Manga, manhwa, author...',
+                        hintStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.4),
+                          fontSize: 16,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 18,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

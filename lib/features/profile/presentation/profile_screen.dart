@@ -48,10 +48,10 @@ class ProfileView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+        //   onPressed: () => context.pop(),
+        // ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
@@ -160,7 +160,7 @@ class ProfileView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 88),
                     ],
                   ),
                 ),

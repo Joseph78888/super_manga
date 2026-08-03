@@ -52,14 +52,12 @@ class SupabaseMangaRemoteDataSource implements MangaRemoteDataSource {
     var query = supabaseClient
         .from('manga')
         .select('*, manga_genres(genres(*))');
-    
+
     if (type != null && type != 'All') {
       query = query.eq('type', type);
     }
 
-    final response = await query
-        .order('rating', ascending: false)
-        .limit(5);
+    final response = await query.order('rating', ascending: false).limit(5);
 
     return (response as List<dynamic>)
         .map((json) => Manga.fromJson(json as Map<String, dynamic>))
@@ -77,9 +75,7 @@ class SupabaseMangaRemoteDataSource implements MangaRemoteDataSource {
       query = query.eq('type', type);
     }
 
-    final response = await query
-        .order('rating', ascending: false)
-        .limit(10);
+    final response = await query.order('rating', ascending: false).limit(10);
 
     return (response as List<dynamic>)
         .map((json) => Manga.fromJson(json as Map<String, dynamic>))

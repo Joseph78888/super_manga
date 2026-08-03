@@ -26,6 +26,7 @@ class LibraryView extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [

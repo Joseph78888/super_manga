@@ -21,13 +21,13 @@ class PillBadge extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.black.withOpacity(0.3),
+        color: backgroundColor ?? Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         text.toUpperCase(),
         style: TextStyle(
-          color: textColor ?? Colors.white.withOpacity(0.8),
+          color: textColor ?? Colors.white.withValues(alpha: 0.8),
           fontSize: fontSize,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
