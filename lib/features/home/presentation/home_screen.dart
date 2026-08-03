@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:multiavatar/multiavatar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../data/datasources/manga_remote_data_source.dart';
 import '../data/repositories/manga_repository.dart';
 import '../domain/manga.dart';
@@ -86,7 +84,9 @@ class _HomeViewState extends State<_HomeView> {
               'Super Manga');
 
     return Scaffold(
+      // extendBodyBehindAppBar: true,
       body: SafeArea(
+        bottom: false,
         child: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
             final isLoading = state is HomeInitial || state is HomeLoading;
@@ -153,20 +153,20 @@ class _HomeViewState extends State<_HomeView> {
                                 ),
                               ],
                             ),
-                            GestureDetector(
-                              onTap: () => context.push('/profile'),
-                              child: CircleAvatar(
-                                radius: 22,
-                                backgroundColor: const Color(0xFF1E1A33),
-                                child: ClipOval(
-                                  child: SvgPicture.string(
-                                    avatarSvg,
-                                    width: 44,
-                                    height: 44,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // GestureDetector(
+                            //   onTap: () => context.push('/profile'),
+                            //   child: CircleAvatar(
+                            //     radius: 22,
+                            //     backgroundColor: const Color(0xFF1E1A33),
+                            //     child: ClipOval(
+                            //       child: SvgPicture.string(
+                            //         avatarSvg,
+                            //         width: 44,
+                            //         height: 44,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),

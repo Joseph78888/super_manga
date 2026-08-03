@@ -5,8 +5,8 @@ import '../../../../core/widgets/manga_poster_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubit/browse_cubit.dart';
 import 'cubit/browse_state.dart';
-import 'package:super_manga/features/search/presentation/cubit/search_cubit.dart';
-import 'package:super_manga/features/search/presentation/cubit/search_state.dart';
+import 'package:super_manga/features/browse/presentation/cubit/search_cubit.dart';
+import 'package:super_manga/features/browse/presentation/cubit/search_state.dart';
 
 class BrowseScreen extends StatelessWidget {
   const BrowseScreen({super.key});
@@ -126,6 +126,7 @@ class BrowseView extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [

@@ -5,7 +5,6 @@ import '../widgets/main_scaffold.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/browse/presentation/browse_screen.dart';
 import '../../features/library/presentation/library_screen.dart';
-import '../../features/search/presentation/search_screen.dart';
 import '../../features/detail/presentation/detail_screen.dart';
 import '../../features/reader/presentation/reader_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
